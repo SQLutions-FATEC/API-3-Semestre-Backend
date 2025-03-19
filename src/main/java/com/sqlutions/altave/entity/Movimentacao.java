@@ -18,4 +18,5 @@ public class Movimentacao {
     @ManyToOne
     @JoinColumn(name = "funcionario_id")
     private Funcionario funcionario;
+
 }

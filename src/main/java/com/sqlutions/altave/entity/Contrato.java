@@ -26,4 +26,5 @@ public class Contrato {
     @ManyToOne
     @JoinColumn(name = "cargo_id")
     private Cargo cargo;
+
 }
