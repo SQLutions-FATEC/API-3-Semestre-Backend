@@ -12,5 +12,5 @@ public class Cargo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCargo;
     private String nomeCargo;
-
 }
+

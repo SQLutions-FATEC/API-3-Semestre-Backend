@@ -14,5 +14,5 @@ public class Empresa {
     private String razaoSocial;
     private String nomeFantasia;
     private String cnpj;
-
 }
+

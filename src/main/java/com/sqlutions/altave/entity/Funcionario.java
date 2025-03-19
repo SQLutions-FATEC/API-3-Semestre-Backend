@@ -20,5 +20,5 @@ public class Funcionario {
 
     @OneToMany(mappedBy = "funcionario")
     private Set<Movimentacao> movimentacoes;
-
 }
+
