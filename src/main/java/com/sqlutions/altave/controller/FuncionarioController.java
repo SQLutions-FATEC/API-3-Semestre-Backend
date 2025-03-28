@@ -1,7 +1,7 @@
 package com.sqlutions.altave.controller;
 
 import com.sqlutions.altave.dto.FuncionarioDTO;
-import com.sqlutions.altave.model.Funcionario;
+import com.sqlutions.altave.entity.Funcionario;
 import com.sqlutions.altave.service.FuncionarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
