@@ -1,13 +1,21 @@
 package com.sqlutions.altave.dto;
 
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class EmpresaDTO {
     private Long id;
+    @JsonProperty("company_name")
     private String companyName;
+    @JsonProperty("cnpj")
     private String cnpj;
+    @JsonProperty("trade_name")
     private String tradeName;
 
     public EmpresaDTO() {
     }
+
 
     public EmpresaDTO(Long id, String companyName, String cnpj, String tradeName) {
         this.id = id;
