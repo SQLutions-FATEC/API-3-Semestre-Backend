@@ -1,7 +1,7 @@
 package com.sqlutions.altave.service.implementation;
 
 import com.sqlutions.altave.dto.FuncionarioDTO;
-import com.sqlutions.altave.model.Funcionario;
+import com.sqlutions.altave.entity.Funcionario;
 import com.sqlutions.altave.repository.FuncionarioRepository;
 import com.sqlutions.altave.service.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
