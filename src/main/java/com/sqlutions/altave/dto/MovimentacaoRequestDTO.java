@@ -1,7 +1,6 @@
 package com.sqlutions.altave.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sqlutions.altave.entity.Funcionario;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MovimentacaoDTO {
+public class MovimentacaoRequestDTO {
     @JsonProperty("data_hora")
     private String dataHora;
 
@@ -19,5 +18,5 @@ public class MovimentacaoDTO {
     private String sentido;
 
     @JsonProperty("funcionario")
-    private Funcionario funcionario;
+    private Long funcionario;
 }

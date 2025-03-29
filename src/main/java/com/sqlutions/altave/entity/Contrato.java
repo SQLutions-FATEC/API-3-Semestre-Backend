@@ -2,7 +2,8 @@ package com.sqlutions.altave.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -12,8 +13,8 @@ public class Contrato {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idContrato;
-    private Date dataInicio;
-    private Date dataFim;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
 
     @ManyToOne
     @JoinColumn(name = "empresa_id")

@@ -1,6 +1,8 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.MovimentacaoDTO;
+import com.sqlutions.altave.dto.MovimentacaoRequestDTO;
+import com.sqlutions.altave.dto.MovimentacaoResponseDTO;
+import com.sqlutions.altave.dto.MovimentacaoResponseWithTotalDTO;
 import com.sqlutions.altave.dto.MovimentacaoSearchDTO;
 import com.sqlutions.altave.service.MovimentacaoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,10 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @RestController
 @RequestMapping("/movimentacoes")
@@ -29,39 +33,59 @@ public class MovimentacaoController {
 
     @PostMapping
     @Operation(summary = "Criar uma nova movimentação")
-    public ResponseEntity<MovimentacaoDTO> createMovimentacao(@Valid @RequestBody MovimentacaoDTO movimentacaoDTO) {
-        MovimentacaoDTO createdMovimentacao = movimentacaoService.createMovimentacao(movimentacaoDTO);
+    public ResponseEntity<MovimentacaoResponseDTO> createMovimentacao(@Valid @RequestBody MovimentacaoRequestDTO movimentacaoRequestDTO) {
+        MovimentacaoResponseDTO createdMovimentacao = movimentacaoService.createMovimentacao(movimentacaoRequestDTO);
         return ResponseEntity.ok(createdMovimentacao);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Obter uma movimentação por ID")
-    public ResponseEntity<MovimentacaoDTO> getMovimentacaoById(@PathVariable Long id) {
-        MovimentacaoDTO movimentacao = movimentacaoService.getMovimentacaoById(id);
+    public ResponseEntity<MovimentacaoResponseDTO> getMovimentacaoById(@PathVariable Long id) {
+        MovimentacaoResponseDTO movimentacao = movimentacaoService.getMovimentacaoById(id);
         return ResponseEntity.ok(movimentacao);
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Operation(summary = "Obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<List<MovimentacaoDTO>> searchMovimentacoes(@RequestBody(required = false) @Valid MovimentacaoSearchDTO movimentacaoSearchDTO) {
-        if (movimentacaoSearchDTO == null) {
-            movimentacaoSearchDTO = new MovimentacaoSearchDTO();
-        }
-        List<MovimentacaoDTO> movimentacoes = movimentacaoService.searchMovimentacoes(movimentacaoSearchDTO);
-        return ResponseEntity.ok(movimentacoes);
+    public ResponseEntity<MovimentacaoResponseWithTotalDTO> searchMovimentacoes(
+            @RequestParam(required = false) Long funcionario,
+            @RequestParam(required = false) Long empresa,
+            @RequestParam(required = false) Long funcao,
+            @RequestParam(value = "started_at", required = false) String startedAt,
+            @RequestParam(value = "end_at", required = false) String endAt,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm");
+
+        LocalDateTime startedAtDate = null;
+        LocalDateTime endAtDate = null;
+
+        if (startedAt != null) { startedAtDate = LocalDateTime.parse(startedAt, formatter); }
+        if (endAt != null) { endAtDate = LocalDateTime.parse(endAt, formatter); }
+
+        MovimentacaoResponseWithTotalDTO response = movimentacaoService.searchMovimentacoes(MovimentacaoSearchDTO.builder()
+                .funcionario(funcionario)
+                .empresa(empresa)
+                .funcao(funcao)
+                .startedAtDate(startedAtDate)
+                .endAtDate(endAtDate)
+                .build(), page, size);
+
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Atualizar uma movimentação")
-    public ResponseEntity<MovimentacaoDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody MovimentacaoDTO movimentacaoDTO) throws ParseException {
-        MovimentacaoDTO updatedMovimentacao = movimentacaoService.updateMovimentacao(id, movimentacaoDTO);
+    public ResponseEntity<MovimentacaoResponseDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody MovimentacaoRequestDTO movimentacaoRequestDTO) throws ParseException {
+        MovimentacaoResponseDTO updatedMovimentacao = movimentacaoService.updateMovimentacao(id, movimentacaoRequestDTO);
         return ResponseEntity.ok(updatedMovimentacao);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Excluir uma movimentação")
-    public ResponseEntity<MovimentacaoDTO> deleteMovimentacao(@PathVariable Long id) {
-        MovimentacaoDTO deletedMovimentacao = movimentacaoService.deleteMovimentacao(id);
+    public ResponseEntity<MovimentacaoResponseDTO> deleteMovimentacao(@PathVariable Long id) {
+        MovimentacaoResponseDTO deletedMovimentacao = movimentacaoService.deleteMovimentacao(id);
         return ResponseEntity.ok(deletedMovimentacao);
     }
 }

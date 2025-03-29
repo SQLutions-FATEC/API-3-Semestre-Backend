@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Past;
 import java.util.Date;
 
 @Data
-public class FuncionarioDTO {
+public class FuncionarioRequestDTO {
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")
@@ -24,7 +24,7 @@ public class FuncionarioDTO {
     private String tipoSanguineo;
 
     @NotBlank(message = "Sexo é obrigatório")
-    @Pattern(regexp = "^(M|F)$", message = "Sexo deve ser 'M' (masculino) ou 'F' (feminino)")
+    @Pattern(regexp = "^([MF])$", message = "Sexo deve ser 'M' (masculino) ou 'F' (feminino)")
     private String sexo;
 }
 

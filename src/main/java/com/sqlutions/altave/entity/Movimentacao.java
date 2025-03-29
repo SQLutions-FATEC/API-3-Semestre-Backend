@@ -2,7 +2,8 @@ package com.sqlutions.altave.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Date;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -13,7 +14,7 @@ public class Movimentacao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idMovimentacao;
-    private Date dataHora;
+    private LocalDateTime dataHora;
     private String sentido;
 
     @ManyToOne

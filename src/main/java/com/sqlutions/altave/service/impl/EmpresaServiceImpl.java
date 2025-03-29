@@ -1,4 +1,4 @@
-package com.sqlutions.altave.service.implementation;
+package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.EmpresaDTO;
 import com.sqlutions.altave.entity.Empresa;
@@ -66,7 +66,6 @@ public class EmpresaServiceImpl implements EmpresaService {
 
     private Empresa convertToEntity(EmpresaDTO companyDTO) {
         Empresa company = new Empresa();
-        company.setIdEmpresa(companyDTO.getId());
         company.setRazaoSocial(companyDTO.getCompanyName());
         company.setNomeFantasia(companyDTO.getTradeName());
         company.setCnpj(companyDTO.getCnpj());
