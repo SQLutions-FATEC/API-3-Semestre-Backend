@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MovimentacaoResponseWithTotalDTO {
-    private List<MovimentacaoListDTO> items;
+public class ClockInResponseWithTotalDTO {
+    private List<ClockInListDTO> items;
     private long total;
 }

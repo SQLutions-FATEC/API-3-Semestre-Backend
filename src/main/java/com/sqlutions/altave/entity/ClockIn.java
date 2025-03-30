@@ -10,15 +10,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Movimentacao {
+public class ClockIn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idMovimentacao;
-    private LocalDateTime dataHora;
-    private String sentido;
+    private Long clockInId;
+    private LocalDateTime dateTime;
+    private String direction;
 
     @ManyToOne
-    @JoinColumn(name = "funcionario_id")
-    private Funcionario funcionario;
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 }
 

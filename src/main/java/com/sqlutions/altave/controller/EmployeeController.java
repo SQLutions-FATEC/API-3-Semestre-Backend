@@ -1,8 +1,8 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.FuncionarioRequestDTO;
-import com.sqlutions.altave.entity.Funcionario;
-import com.sqlutions.altave.service.FuncionarioService;
+import com.sqlutions.altave.dto.EmployeeRequestDTO;
+import com.sqlutions.altave.entity.Employee;
+import com.sqlutions.altave.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,31 +15,31 @@ import java.util.List;
 @RestController
 @RequestMapping("funcionarios")
 @Tag(name = "Employees", description = "APIs para gerenciamento de funcionários")
-public class FuncionarioController {
+public class EmployeeController {
 
     @Autowired
-    private FuncionarioService funcionarioService;
+    private EmployeeService employeeService;
 
     @PostMapping
     @Operation(summary = "Endpoint para criar funcionário")
-    public ResponseEntity<Funcionario> criarFuncionario(@RequestBody @Valid FuncionarioRequestDTO funcionarioRequestDTO) {
-        Funcionario funcionarioCriado = funcionarioService.criarFuncionario(funcionarioRequestDTO);
-        return new ResponseEntity<>(funcionarioCriado, HttpStatus.CREATED);
+    public ResponseEntity<Employee> criarFuncionario(@RequestBody @Valid EmployeeRequestDTO employeeRequestDTO) {
+        Employee employeeCriado = employeeService.createEmployee(employeeRequestDTO);
+        return new ResponseEntity<>(employeeCriado, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Endpoint para buscar funcionário pelo ID")
-    public ResponseEntity<Funcionario> buscarFuncionarioPorId(@PathVariable Long id) {
-        return funcionarioService.buscarPorId(id)
+    public ResponseEntity<Employee> buscarFuncionarioPorId(@PathVariable Long id) {
+        return employeeService.getEmployeeById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
     @Operation(summary = "Endpoint para buscar todos os funcionários")
-    public ResponseEntity<List<Funcionario>> listarFuncionarios() {
-        List<Funcionario> funcionarios = funcionarioService.listarTodos();
-        return ResponseEntity.ok(funcionarios);
+    public ResponseEntity<List<Employee>> listarFuncionarios() {
+        List<Employee> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 }
 

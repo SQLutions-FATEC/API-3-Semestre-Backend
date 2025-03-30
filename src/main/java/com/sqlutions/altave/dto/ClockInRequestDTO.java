@@ -6,17 +6,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FuncionarioResponseDTO {
-    @JsonProperty("id_funcionario")
-    private Long idFuncionario;
-    private String nome;
-    private Date dataNascimento;
-    private String tipoSanguineo;
-    private String sexo;
+public class ClockInRequestDTO {
+    @JsonProperty("data_hora")
+    private String dataHora;
+
+    @JsonProperty("sentido")
+    private String sentido;
+
+    @JsonProperty("funcionario")
+    private Long funcionario;
 }
