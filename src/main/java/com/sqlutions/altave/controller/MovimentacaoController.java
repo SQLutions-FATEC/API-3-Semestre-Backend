@@ -32,21 +32,21 @@ public class MovimentacaoController {
     private MovimentacaoService movimentacaoService;
 
     @PostMapping
-    @Operation(summary = "Criar uma nova movimentação")
+    @Operation(summary = "Endpoint para criar uma nova movimentação")
     public ResponseEntity<MovimentacaoResponseDTO> createMovimentacao(@Valid @RequestBody MovimentacaoRequestDTO movimentacaoRequestDTO) {
         MovimentacaoResponseDTO createdMovimentacao = movimentacaoService.createMovimentacao(movimentacaoRequestDTO);
         return ResponseEntity.ok(createdMovimentacao);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obter uma movimentação por ID")
+    @Operation(summary = "Endpoint para buscar uma movimentação pelo ID")
     public ResponseEntity<MovimentacaoResponseDTO> getMovimentacaoById(@PathVariable Long id) {
         MovimentacaoResponseDTO movimentacao = movimentacaoService.getMovimentacaoById(id);
         return ResponseEntity.ok(movimentacao);
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Obter todas as movimentações ou pesquisar com filtros")
+    @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
     public ResponseEntity<MovimentacaoResponseWithTotalDTO> searchMovimentacoes(
             @RequestParam(required = false) Long funcionario,
             @RequestParam(required = false) Long empresa,
@@ -76,14 +76,14 @@ public class MovimentacaoController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar uma movimentação")
+    @Operation(summary = "Endpoint para atualizar uma movimentação")
     public ResponseEntity<MovimentacaoResponseDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody MovimentacaoRequestDTO movimentacaoRequestDTO) throws ParseException {
         MovimentacaoResponseDTO updatedMovimentacao = movimentacaoService.updateMovimentacao(id, movimentacaoRequestDTO);
         return ResponseEntity.ok(updatedMovimentacao);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Excluir uma movimentação")
+    @Operation(summary = "Endpoint para excluir uma movimentação")
     public ResponseEntity<MovimentacaoResponseDTO> deleteMovimentacao(@PathVariable Long id) {
         MovimentacaoResponseDTO deletedMovimentacao = movimentacaoService.deleteMovimentacao(id);
         return ResponseEntity.ok(deletedMovimentacao);
