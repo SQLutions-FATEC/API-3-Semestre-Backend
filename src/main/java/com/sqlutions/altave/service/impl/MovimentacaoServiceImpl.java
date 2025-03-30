@@ -56,6 +56,9 @@ public class MovimentacaoServiceImpl implements MovimentacaoService {
 
     @Override
     public MovimentacaoResponseWithTotalDTO searchMovimentacoes(MovimentacaoSearchDTO movimentacaoSearchDTO, int page, int size) {
+        if (page > 0) {
+            page = page - 1;
+        }
         Pageable pageable = PageRequest.of(page, size);
         Page<Movimentacao> movimentacoesPage = movimentacaoRepository.findAll(pageable);
 
