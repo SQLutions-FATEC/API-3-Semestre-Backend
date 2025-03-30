@@ -1,6 +1,6 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.FuncionarioDTO;
+import com.sqlutions.altave.dto.FuncionarioRequestDTO;
 import com.sqlutions.altave.entity.Funcionario;
 import com.sqlutions.altave.service.FuncionarioService;
 import jakarta.validation.Valid;
@@ -18,8 +18,8 @@ public class FuncionarioController {
     private FuncionarioService funcionarioService;
 
     @PostMapping
-    public ResponseEntity<Funcionario> criarFuncionario(@RequestBody @Valid FuncionarioDTO funcionarioDTO) {
-        Funcionario funcionarioCriado = funcionarioService.criarFuncionario(funcionarioDTO);
+    public ResponseEntity<Funcionario> criarFuncionario(@RequestBody @Valid FuncionarioRequestDTO funcionarioRequestDTO) {
+        Funcionario funcionarioCriado = funcionarioService.criarFuncionario(funcionarioRequestDTO);
         return new ResponseEntity<>(funcionarioCriado, HttpStatus.CREATED);
     }
 

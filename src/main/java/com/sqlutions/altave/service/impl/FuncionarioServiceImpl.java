@@ -1,6 +1,6 @@
-package com.sqlutions.altave.service.implementation;
+package com.sqlutions.altave.service.impl;
 
-import com.sqlutions.altave.dto.FuncionarioDTO;
+import com.sqlutions.altave.dto.FuncionarioRequestDTO;
 import com.sqlutions.altave.entity.Funcionario;
 import com.sqlutions.altave.repository.FuncionarioRepository;
 import com.sqlutions.altave.service.FuncionarioService;
@@ -16,12 +16,12 @@ public class FuncionarioServiceImpl implements FuncionarioService {
     private FuncionarioRepository funcionarioRepository;
 
     @Override
-    public Funcionario criarFuncionario(FuncionarioDTO funcionarioDTO) {
+    public Funcionario criarFuncionario(FuncionarioRequestDTO funcionarioRequestDTO) {
         Funcionario funcionario = new Funcionario();
-        funcionario.setNome(funcionarioDTO.getNome());
-        funcionario.setDataNascimento(funcionarioDTO.getDataNascimento());
-        funcionario.setTipoSanguineo(funcionarioDTO.getTipoSanguineo());
-        funcionario.setSexo(funcionarioDTO.getSexo());
+        funcionario.setNome(funcionarioRequestDTO.getNome());
+        funcionario.setDataNascimento(funcionarioRequestDTO.getDataNascimento());
+        funcionario.setTipoSanguineo(funcionarioRequestDTO.getTipoSanguineo());
+        funcionario.setSexo(funcionarioRequestDTO.getSexo());
         return funcionarioRepository.save(funcionario);
     }
 
