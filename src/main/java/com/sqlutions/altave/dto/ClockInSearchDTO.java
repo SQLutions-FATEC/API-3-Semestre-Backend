@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MovimentacaoSearchDTO {
+public class ClockInSearchDTO {
 
     private Long funcionario;
     private Long empresa;

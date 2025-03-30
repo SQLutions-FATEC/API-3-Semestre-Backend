@@ -7,12 +7,10 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Empresa {
+public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idEmpresa;
-    private String razaoSocial;
-    private String nomeFantasia;
-    private String cnpj;
+    private Long roleId;
+    private String name;
 }
 

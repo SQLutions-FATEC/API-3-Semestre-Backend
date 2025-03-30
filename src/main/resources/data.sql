@@ -1,12 +1,12 @@
 -- 1) EMPRESAS
-INSERT INTO empresa (razao_social, nome_fantasia, cnpj)
+INSERT INTO company (company_name, trade_name, cnpj)
 VALUES
     ('Scuderia Ferrari','Ferrari','11111111111111'),
     ('Vasco da Gama','Vasco','22222222222222'),
     ('sqlutions co.','sqlutions','33333333333333');
 
 -- 2) FUNCIONARIOS
-INSERT INTO funcionario (nome, data_nascimento, sexo, tipo_sanguineo)
+INSERT INTO employee (name, birth_date, sex, blood_type)
 VALUES
     ('Davi','1990-01-01','M','O\+'),
     ('Augusto','1990-01-02','M','O\+'),
@@ -30,7 +30,7 @@ VALUES
     ('Eu','1990-01-20','M','O\+');
 
 -- 3) CARGOS
-INSERT INTO cargo (nome_cargo)
+INSERT INTO role (name)
 VALUES
     ('Desenvolvedor'),
     ('Analista'),
@@ -44,7 +44,7 @@ VALUES
     ('Analista de Dados');
 
 -- 4) CONTRATOS
-INSERT INTO contrato (data_inicio, data_fim, empresa_id, funcionario_id, cargo_id)
+INSERT INTO contract (start_date, end_date, company_id, employee_id, role_id)
 VALUES
     ('2023-01-01', '2023-12-31', 1, 1, 1),
     ('2023-02-01', '2023-11-30', 2, 2, 2),
@@ -68,7 +68,7 @@ VALUES
     ('2023-08-15', '2023-05-15', 2, 20, 9);
 
 -- 5) MOVIMENTACOES FOR 3 MONTHS (2023-06-01 THROUGH 2023-08-31)
-INSERT INTO movimentacao (data_hora, sentido, funcionario_id)
+INSERT INTO clock_in (date_time, direction, employee_id)
 VALUES
     -- JUNE 2023
     ('2023-06-01 08:00:00','Entrada',1),

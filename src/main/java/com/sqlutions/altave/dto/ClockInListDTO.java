@@ -10,15 +10,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MovimentacaoListDTO {
+public class ClockInListDTO {
     @JsonProperty("id")
     private Long id;
     /*@JsonProperty("register_number")
     private Long numeroRegistro;*/
     @JsonProperty("employee")
-    private FuncionarioListDTO funcionario;
+    private EmployeeListDTO funcionario;
     @JsonProperty("company")
-    private EmpresaListDTO empresa;
+    private CompanyListDTO empresa;
     @JsonProperty("role_name")
     private String nomeFuncao;
     @JsonProperty("direction")

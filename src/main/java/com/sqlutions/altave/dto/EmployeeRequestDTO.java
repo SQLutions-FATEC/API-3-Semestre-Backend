@@ -1,15 +1,22 @@
 package com.sqlutions.altave.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Past;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
 @Data
-public class FuncionarioRequestDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class EmployeeRequestDTO {
 
     @NotBlank(message = "Nome é obrigatório")
     @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres")

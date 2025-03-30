@@ -10,12 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EmpresaDTO {
+public class CompanyListDTO {
     private Long id;
-    @JsonProperty("company_name")
+    @JsonProperty("name")
     private String companyName;
-    @JsonProperty("cnpj")
-    private String cnpj;
-    @JsonProperty("trade_name")
-    private String tradeName;
 }

@@ -1,10 +1,10 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.MovimentacaoRequestDTO;
-import com.sqlutions.altave.dto.MovimentacaoResponseDTO;
-import com.sqlutions.altave.dto.MovimentacaoResponseWithTotalDTO;
-import com.sqlutions.altave.dto.MovimentacaoSearchDTO;
-import com.sqlutions.altave.service.MovimentacaoService;
+import com.sqlutions.altave.dto.ClockInRequestDTO;
+import com.sqlutions.altave.dto.ClockInResponseDTO;
+import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
+import com.sqlutions.altave.dto.ClockInSearchDTO;
+import com.sqlutions.altave.service.ClockInService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,27 +27,27 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @RequestMapping("/movimentacoes")
 @Tag(name = "Movimentações", description = "APIs para gerenciamento de movimentações")
-public class MovimentacaoController {
+public class ClockInController {
     @Autowired
-    private MovimentacaoService movimentacaoService;
+    private ClockInService clockInService;
 
     @PostMapping
-    @Operation(summary = "Criar uma nova movimentação")
-    public ResponseEntity<MovimentacaoResponseDTO> createMovimentacao(@Valid @RequestBody MovimentacaoRequestDTO movimentacaoRequestDTO) {
-        MovimentacaoResponseDTO createdMovimentacao = movimentacaoService.createMovimentacao(movimentacaoRequestDTO);
+    @Operation(summary = "Endpoint para criar uma nova movimentação")
+    public ResponseEntity<ClockInResponseDTO> createMovimentacao(@Valid @RequestBody ClockInRequestDTO clockInRequestDTO) {
+        ClockInResponseDTO createdMovimentacao = clockInService.createClockIn(clockInRequestDTO);
         return ResponseEntity.ok(createdMovimentacao);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Obter uma movimentação por ID")
-    public ResponseEntity<MovimentacaoResponseDTO> getMovimentacaoById(@PathVariable Long id) {
-        MovimentacaoResponseDTO movimentacao = movimentacaoService.getMovimentacaoById(id);
+    @Operation(summary = "Endpoint para buscar uma movimentação pelo ID")
+    public ResponseEntity<ClockInResponseDTO> getMovimentacaoById(@PathVariable Long id) {
+        ClockInResponseDTO movimentacao = clockInService.getClockInById(id);
         return ResponseEntity.ok(movimentacao);
     }
 
     @GetMapping("/search")
-    @Operation(summary = "Obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<MovimentacaoResponseWithTotalDTO> searchMovimentacoes(
+    @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
+    public ResponseEntity<ClockInResponseWithTotalDTO> searchMovimentacoes(
             @RequestParam(required = false) Long funcionario,
             @RequestParam(required = false) Long empresa,
             @RequestParam(required = false) Long funcao,
@@ -64,7 +64,7 @@ public class MovimentacaoController {
         if (startedAt != null) { startedAtDate = LocalDateTime.parse(startedAt, formatter); }
         if (endAt != null) { endAtDate = LocalDateTime.parse(endAt, formatter); }
 
-        MovimentacaoResponseWithTotalDTO response = movimentacaoService.searchMovimentacoes(MovimentacaoSearchDTO.builder()
+        ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
                 .funcionario(funcionario)
                 .empresa(empresa)
                 .funcao(funcao)
@@ -76,16 +76,16 @@ public class MovimentacaoController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Atualizar uma movimentação")
-    public ResponseEntity<MovimentacaoResponseDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody MovimentacaoRequestDTO movimentacaoRequestDTO) throws ParseException {
-        MovimentacaoResponseDTO updatedMovimentacao = movimentacaoService.updateMovimentacao(id, movimentacaoRequestDTO);
+    @Operation(summary = "Endpoint para atualizar uma movimentação")
+    public ResponseEntity<ClockInResponseDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody ClockInRequestDTO clockInRequestDTO) throws ParseException {
+        ClockInResponseDTO updatedMovimentacao = clockInService.updateClockIn(id, clockInRequestDTO);
         return ResponseEntity.ok(updatedMovimentacao);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Excluir uma movimentação")
-    public ResponseEntity<MovimentacaoResponseDTO> deleteMovimentacao(@PathVariable Long id) {
-        MovimentacaoResponseDTO deletedMovimentacao = movimentacaoService.deleteMovimentacao(id);
+    @Operation(summary = "Endpoint para excluir uma movimentação")
+    public ResponseEntity<ClockInResponseDTO> deleteMovimentacao(@PathVariable Long id) {
+        ClockInResponseDTO deletedMovimentacao = clockInService.deleteClockIn(id);
         return ResponseEntity.ok(deletedMovimentacao);
     }
 }
