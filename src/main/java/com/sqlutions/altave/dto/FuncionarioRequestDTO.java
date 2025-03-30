@@ -1,14 +1,21 @@
 package com.sqlutions.altave.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Past;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class FuncionarioRequestDTO {
 
     @NotBlank(message = "Nome é obrigatório")
