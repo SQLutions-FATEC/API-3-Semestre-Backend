@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("funcionarios")
+@RequestMapping("employee")
 @Tag(name = "Employees", description = "APIs para gerenciamento de funcionários")
 public class EmployeeController {
 

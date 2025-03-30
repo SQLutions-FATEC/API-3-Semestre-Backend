@@ -25,8 +25,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
-@RequestMapping("/movimentacoes")
-@Tag(name = "Movimentações", description = "APIs para gerenciamento de movimentações")
+@RequestMapping("/clock_in")
+@Tag(name = "Clock ins", description = "APIs para gerenciamento de movimentações")
 public class ClockInController {
     @Autowired
     private ClockInService clockInService;
