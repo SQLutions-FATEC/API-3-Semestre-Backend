@@ -13,7 +13,8 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
-    private String name;
+    @Column(name = "name")
+    private String EmployeeName;
     private Date birthDate;
     private String sex;
     private String bloodType;
