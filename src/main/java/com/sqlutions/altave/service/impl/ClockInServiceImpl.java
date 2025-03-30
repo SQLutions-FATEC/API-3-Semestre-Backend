@@ -56,6 +56,10 @@ public class ClockInServiceImpl implements ClockInService {
 
     @Override
     public ClockInResponseWithTotalDTO searchClockIns(ClockInSearchDTO clockInSearchDTO, int page, int size) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
         Pageable pageable = PageRequest.of(page, size);
         Page<ClockIn> movimentacoesPage = clockInRepository.findAll(pageable);
 
