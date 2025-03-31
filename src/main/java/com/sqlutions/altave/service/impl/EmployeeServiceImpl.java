@@ -18,10 +18,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee createEmployee(EmployeeRequestDTO employeeRequestDTO) {
         Employee employee = new Employee();
-        employee.setName(employeeRequestDTO.getNome());
-        employee.setBirthDate(employeeRequestDTO.getDataNascimento());
-        employee.setBloodType(employeeRequestDTO.getTipoSanguineo());
-        employee.setSex(employeeRequestDTO.getSexo());
+        employee.setName(employeeRequestDTO.getName());
+        employee.setBirthDate(employeeRequestDTO.getBirthDate());
+        employee.setBloodType(employeeRequestDTO.getBloodType());
+        employee.setSex(employeeRequestDTO.getSex());
         return employeeRepository.save(employee);
     }
 
