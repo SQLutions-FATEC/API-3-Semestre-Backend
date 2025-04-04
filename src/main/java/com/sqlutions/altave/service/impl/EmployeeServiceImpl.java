@@ -21,6 +21,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = convertToEntity(employeeDTO);
         Employee savedEmployee = employeeRepository.save(employee);
         return convertToDTO(savedEmployee);
+    }
     @Override
     public EmployeeDTO getEmployeeById(Long id){
         Employee employee = employeeRepository.findById(id)
