@@ -14,7 +14,7 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
     @Column(name = "name")
-    private String EmployeeName;
+    private String employeeName;
     private Date birthDate;
     private String sex;
     private String bloodType;
