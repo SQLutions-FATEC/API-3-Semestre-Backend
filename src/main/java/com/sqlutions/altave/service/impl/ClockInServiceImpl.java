@@ -93,6 +93,20 @@ public class ClockInServiceImpl implements ClockInService {
         return mapToDTO(clockIn);
     }
 
+    @Override
+    public ClockInResponseDTO updateClockInTime(Long id, ClockInTimeUpdateDTO updateDTO) {
+        ClockIn clockIn = clockInRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Registro de ponto não encontrado"));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        clockIn.setDateTime(LocalDateTime.parse(updateDTO.getDataHora(), formatter));
+
+        ClockIn updatedClockIn = clockInRepository.save(clockIn);
+        return mapToDTO(updatedClockIn);
+    }
+
+
+
     private ClockInResponseDTO mapToDTO(ClockIn clockIn) {
         return ClockInResponseDTO.builder()
                 .dataHora(clockIn.getDateTime().toString())
