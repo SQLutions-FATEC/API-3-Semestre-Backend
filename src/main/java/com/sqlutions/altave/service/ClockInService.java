@@ -1,9 +1,6 @@
 package com.sqlutions.altave.service;
 
-import com.sqlutions.altave.dto.ClockInRequestDTO;
-import com.sqlutions.altave.dto.ClockInResponseDTO;
-import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
-import com.sqlutions.altave.dto.ClockInSearchDTO;
+import com.sqlutions.altave.dto.*;
 
 import java.text.ParseException;
 
@@ -13,4 +10,6 @@ public interface ClockInService {
     ClockInResponseWithTotalDTO searchClockIns(ClockInSearchDTO clockInSearchDTO, int page, int size);
     ClockInResponseDTO updateClockIn(Long id, ClockInRequestDTO clockInRequestDTO) throws ParseException;
     ClockInResponseDTO deleteClockIn(Long id);
+    ClockInResponseDTO updateClockInTime(Long id, ClockInTimeUpdateDTO updateDTO);
+
 }
