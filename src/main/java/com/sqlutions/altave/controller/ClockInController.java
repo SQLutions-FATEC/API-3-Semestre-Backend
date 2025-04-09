@@ -4,21 +4,14 @@ import com.sqlutions.altave.dto.ClockInRequestDTO;
 import com.sqlutions.altave.dto.ClockInResponseDTO;
 import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
 import com.sqlutions.altave.dto.ClockInSearchDTO;
+import com.sqlutions.altave.dto.ClockInTimeUpdateDTO;
 import com.sqlutions.altave.service.ClockInService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -28,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/clock_in")
 @Tag(name = "Clock ins", description = "APIs para gerenciamento de movimentações")
 public class ClockInController {
+
     @Autowired
     private ClockInService clockInService;
 
@@ -61,8 +55,12 @@ public class ClockInController {
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
-        if (startedAt != null) { startedAtDate = LocalDateTime.parse(startedAt, formatter); }
-        if (endAt != null) { endAtDate = LocalDateTime.parse(endAt, formatter); }
+        if (startedAt != null) {
+            startedAtDate = LocalDateTime.parse(startedAt, formatter);
+        }
+        if (endAt != null) {
+            endAtDate = LocalDateTime.parse(endAt, formatter);
+        }
 
         ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
                 .funcionario(funcionario)
@@ -87,5 +85,12 @@ public class ClockInController {
     public ResponseEntity<ClockInResponseDTO> deleteMovimentacao(@PathVariable Long id) {
         ClockInResponseDTO deletedMovimentacao = clockInService.deleteClockIn(id);
         return ResponseEntity.ok(deletedMovimentacao);
+    }
+
+    @PatchMapping("/{id}/horario")
+    @Operation(summary = "Endpoint para atualizar o horário de uma movimentação")
+    public ResponseEntity<ClockInResponseDTO> updateClockInTime(@PathVariable Long id, @RequestBody ClockInTimeUpdateDTO dto) {
+        ClockInResponseDTO updated = clockInService.updateClockInTime(id, dto);
+        return ResponseEntity.ok(updated);
     }
 }
