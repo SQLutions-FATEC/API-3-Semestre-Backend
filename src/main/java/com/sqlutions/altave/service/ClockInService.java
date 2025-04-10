@@ -10,6 +10,5 @@ public interface ClockInService {
     ClockInResponseWithTotalDTO searchClockIns(ClockInSearchDTO clockInSearchDTO, int page, int size);
     ClockInResponseDTO updateClockIn(Long id, ClockInRequestDTO clockInRequestDTO) throws ParseException;
     ClockInResponseDTO deleteClockIn(Long id);
-    ClockInResponseDTO updateClockInTime(Long id, ClockInTimeUpdateDTO updateDTO);
-
+    ClockInResponseDTO updateClockInDatetime(Long id, ClockInTimeUpdateDTO dto);
 }

@@ -94,7 +94,7 @@ public class ClockInServiceImpl implements ClockInService {
     }
 
     @Override
-    public ClockInResponseDTO updateClockInTime(Long id, ClockInTimeUpdateDTO updateDTO) {
+    public ClockInResponseDTO updateClockInDatetime(Long id, ClockInTimeUpdateDTO updateDTO) {
         ClockIn clockIn = clockInRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Registro de ponto não encontrado"));
 
