@@ -55,16 +55,34 @@ public class ClockInServiceImpl implements ClockInService {
             page = page - 1;
         }
 
-        Pageable pageable = PageRequest.of(page, size);
-        Page<ClockIn> movimentacoesPage = clockInRepository.findAll(pageable);
+        List<ClockIn> allClockIns = clockInRepository.findAll();
 
-        List<ClockInListDTO> movimentacoes = movimentacoesPage.stream()
+        List<ClockIn> filtered = allClockIns.stream()
+                .filter(ci -> clockInSearchDTO.getFuncionario() == null ||
+                        ci.getEmployee().getEmployeeId().equals(clockInSearchDTO.getFuncionario()))
+                .filter(ci -> clockInSearchDTO.getEmpresa() == null ||
+                        (ci.getEmployee().getCompany() != null &&
+                                ci.getEmployee().getCompany().getCompanyId().equals(clockInSearchDTO.getEmpresa())))
+                .filter(ci -> clockInSearchDTO.getFuncao() == null ||
+                        (ci.getEmployee().getRole() != null &&
+                                ci.getEmployee().getRole().getRoleId().equals(clockInSearchDTO.getFuncao())))
+                .filter(ci -> clockInSearchDTO.getStartedAtDate() == null ||
+                        !ci.getDateTime().isBefore(clockInSearchDTO.getStartedAtDate()))
+                .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
+                        !ci.getDateTime().isAfter(clockInSearchDTO.getEndAtDate()))
+                .collect(Collectors.toList());
+
+        int total = filtered.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<ClockInListDTO> paged = filtered.subList(start, end).stream()
                 .map(this::mapToListDTO)
                 .collect(Collectors.toList());
 
         return ClockInResponseWithTotalDTO.builder()
-                .items(movimentacoes)
-                .total(movimentacoesPage.getTotalElements())
+                .items(paged)
+                .total((long) total)
                 .build();
     }
 
