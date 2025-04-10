@@ -87,7 +87,7 @@ public class ClockInController {
         return ResponseEntity.ok(deletedMovimentacao);
     }
 
-    @PatchMapping("/{id}/horario")
+    @PatchMapping("/{id}/clock_in")
     @Operation(summary = "Endpoint para atualizar o horário de uma movimentação")
     public ResponseEntity<ClockInResponseDTO> updateClockInTime(@PathVariable Long id, @RequestBody ClockInTimeUpdateDTO dto) {
         ClockInResponseDTO updated = clockInService.updateClockInTime(id, dto);
