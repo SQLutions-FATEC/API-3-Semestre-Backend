@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClockInRepository extends JpaRepository<ClockIn, Long> {
 
-    @Query("SELECT c FROM ClockIn c")
-    Page<ClockIn> searchClockIns(ClockInSearchDTO params, Pageable pageable);
+   @Query("SELECT c FROM ClockIn c")
+   Page<ClockIn> searchClockIns(ClockInSearchDTO params, Pageable pageable);
 }
