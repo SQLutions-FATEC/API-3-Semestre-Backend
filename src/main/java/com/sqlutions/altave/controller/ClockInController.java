@@ -47,7 +47,7 @@ public class ClockInController {
 
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<ClockInResponseWithTotalDTO> searchMovimentacoes(
+    public ResponseEntity<?> searchMovimentacoes(
             @RequestParam(required = false) Long funcionario,
             @RequestParam(required = false) Long empresa,
             @RequestParam(required = false) Long funcao,
@@ -61,8 +61,16 @@ public class ClockInController {
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
-        if (startedAt != null) { startedAtDate = LocalDateTime.parse(startedAt, formatter); }
-        if (endAt != null) { endAtDate = LocalDateTime.parse(endAt, formatter); }
+        try {
+            if (startedAt != null) {
+                startedAtDate = LocalDateTime.parse(startedAt, formatter);
+            }
+            if (endAt != null) {
+                endAtDate = LocalDateTime.parse(endAt, formatter);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão dd-MM-yyyy-HH:mm");
+        }
 
         ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
                 .funcionario(funcionario)
