@@ -120,15 +120,22 @@ public class ClockInServiceImpl implements ClockInService {
     }
 
     private ClockInListDTO mapToListDTO(ClockIn clockIn) {
+        var employee = clockIn.getEmployee();
+        var company = employee.getCompany();
+        var role = employee.getRole();
+
         return ClockInListDTO.builder()
                 .id(clockIn.getClockInId())
-                .funcionario(mapToFuncionarioListDTO(clockIn.getEmployee()))
-                .empresa(new CompanyListDTO(123L, "Empresa"))
-                .nomeFuncao("Função")
+                .funcionario(mapToFuncionarioListDTO(employee))
+                .empresa(company != null
+                        ? new CompanyListDTO(company.getCompanyId(), company.getCompanyName())
+                        : null)
+                .nomeFuncao(role != null ? role.getName() : null)
                 .sentido(clockIn.getDirection())
                 .dataHora(clockIn.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
+
 
     private EmployeeResponseDTO mapToFuncionarioDTO(Employee employee) {
         return EmployeeResponseDTO.builder()
