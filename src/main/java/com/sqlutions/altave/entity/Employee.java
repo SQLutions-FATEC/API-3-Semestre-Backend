@@ -10,6 +10,9 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Employee {
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
