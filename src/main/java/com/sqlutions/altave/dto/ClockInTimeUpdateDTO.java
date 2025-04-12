@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 public class ClockInTimeUpdateDTO {
     @JsonProperty("date_time")
-    private String dataHora;
+    private String dateTime;
 }
