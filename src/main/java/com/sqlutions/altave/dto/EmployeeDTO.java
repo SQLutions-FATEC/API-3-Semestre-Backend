@@ -13,7 +13,6 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class EmployeeDTO {
-    @JsonProperty("id")
     private Long id;
     @JsonProperty("employee_name")
     private String employeeName;
