@@ -13,10 +13,8 @@ import lombok.NoArgsConstructor;
 public class ClockInRequestDTO {
     @JsonProperty("date_time")
     private String dateTime;
-
     @JsonProperty("direction")
     private String direction;
-
     @JsonProperty("employee")
     private Long employee;
 }

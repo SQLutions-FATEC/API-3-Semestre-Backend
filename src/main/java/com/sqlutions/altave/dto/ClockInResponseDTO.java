@@ -1,5 +1,6 @@
 package com.sqlutions.altave.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ClockInResponseDTO {
-    private String dataHora;
-    private String sentido;
-    private EmployeeResponseDTO funcionario;
+    @JsonProperty("date_time")
+    private String dateTime;
+    @JsonProperty("direction")
+    private String direction;
+    @JsonProperty("employee")
+    private EmployeeResponseDTO employee;
 }
