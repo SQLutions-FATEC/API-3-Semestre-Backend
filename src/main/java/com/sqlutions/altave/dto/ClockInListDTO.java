@@ -16,13 +16,13 @@ public class ClockInListDTO {
     /*@JsonProperty("register_number")
     private Long numeroRegistro;*/
     @JsonProperty("employee")
-    private EmployeeListDTO funcionario;
+    private EmployeeListDTO employee;
     @JsonProperty("company")
-    private CompanyListDTO empresa;
+    private CompanyListDTO company;
     @JsonProperty("role_name")
-    private String nomeFuncao;
+    private String roleName;
     @JsonProperty("direction")
-    private String sentido;
+    private String direction;
     @JsonProperty("date_time")
-    private String dataHora;
+    private String dateTime;
 }
