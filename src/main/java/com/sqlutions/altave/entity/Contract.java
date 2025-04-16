@@ -27,5 +27,10 @@ public class Contract {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    public boolean isActive(LocalDate today) {
+        return (startDate != null && !startDate.isAfter(today) &&
+                (endDate != null && !endDate.isBefore(today)));
+    }
 }
 

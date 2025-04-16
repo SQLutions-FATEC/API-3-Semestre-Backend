@@ -25,6 +25,8 @@ public class Employee {
     @JoinColumn(name = "role_id")
     private Role role;
 
+    @Setter
+    @Getter
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
@@ -32,11 +34,4 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     private Set<ClockIn> clockIns;
 
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
-        this.company = company;
-    }
 }
