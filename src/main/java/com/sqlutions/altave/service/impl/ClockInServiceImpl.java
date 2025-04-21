@@ -70,8 +70,8 @@ public class ClockInServiceImpl implements ClockInService {
                         return true;
                     }
 
-                    Optional<Contract> contractOpt = contractRepository.findActiveContractByEmployee(
-                            ci.getEmployee(), LocalDate.now());
+                    Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
+                            ci.getEmployee(), ci.getDateTime().toLocalDate());
 
                     if (contractOpt.isEmpty()) return false;
 
@@ -147,7 +147,8 @@ public class ClockInServiceImpl implements ClockInService {
         String roleName = null;
 
         if (employee != null) {
-            Optional<Contract> contractOpt = contractRepository.findActiveContractByEmployee(employee, LocalDate.now());
+            Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
+                    employee, clockIn.getDateTime().toLocalDate());
 
             if (contractOpt.isPresent()) {
                 Contract contract = contractOpt.get();
