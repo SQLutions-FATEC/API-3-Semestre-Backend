@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CompanyListDTO {
     private Long id;
-    @JsonProperty("name")
+    @JsonProperty("company_name")
     private String companyName;
 }

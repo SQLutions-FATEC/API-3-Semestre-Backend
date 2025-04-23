@@ -1,13 +1,14 @@
 -- 1) EMPRESAS
 INSERT INTO company (company_name, trade_name, cnpj)
 VALUES
-    ('Scuderia Ferrari','Ferrari','11111111111111'),
-    ('Vasco da Gama','Vasco','22222222222222'),
-    ('sqlutions co.','sqlutions','33333333333333');
+    ('SQLutions','SQLutions','80066680000185'),
+    ('TechNova','TechNova','57720660000164'),
+    ('EcoDrive','EcoDrive','67506602000196');
 
 -- 2) FUNCIONARIOS
 INSERT INTO employee (name, birth_date, sex, blood_type, company_id)
 VALUES
+
     ('Davi','1990-01-01','M','O+', 1),
     ('Augusto','1990-01-02','M','O+', 2),
     ('Tiago','1990-01-03','M','O+', 3),
@@ -28,8 +29,6 @@ VALUES
     ('Yuri Alberto','1990-01-18','M','O+', 3),
     ('Ayrton Senna','1990-01-19','M','O+', 1),
     ('Eu','1990-01-20','M','O+', 2);
-
-
 -- 3) CARGOS
 INSERT INTO role (name)
 VALUES
