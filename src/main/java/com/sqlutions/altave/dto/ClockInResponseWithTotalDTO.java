@@ -1,5 +1,6 @@
 package com.sqlutions.altave.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ClockInResponseWithTotalDTO {
+    @JsonProperty("items")
     private List<ClockInListDTO> items;
+    @JsonProperty("total")
     private long total;
 }
