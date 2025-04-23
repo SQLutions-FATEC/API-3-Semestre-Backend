@@ -91,6 +91,9 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTime().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
                         !ci.getDateTime().isAfter(clockInSearchDTO.getEndAtDate()))
+                .filter(ci -> clockInSearchDTO.getDirection() == null ||
+                        (ci.getDirection() != null &&
+                                ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
                 .collect(Collectors.toList());
 
         int total = filtered.size();

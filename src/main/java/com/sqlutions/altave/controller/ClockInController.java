@@ -47,6 +47,7 @@ public class ClockInController {
             @RequestParam(required = false) Long funcao,
             @RequestParam(value = "started_at", required = false) String startedAt,
             @RequestParam(value = "end_at", required = false) String endAt,
+            @RequestParam(required = false) String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -72,6 +73,7 @@ public class ClockInController {
                 .role(funcao)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
+                .direction(direction)
                 .build(), page, size);
 
         return ResponseEntity.ok(response);
