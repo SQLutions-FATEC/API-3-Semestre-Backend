@@ -14,13 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 public class ClockInSearchDTO {
     @JsonProperty("employee")
-    private Long employee;
+    private String employee;
     @JsonProperty("company")
-    private Long company;
+    private String company;
     @JsonProperty("role")
-    private Long role;
+    private String role;
     @JsonProperty("started_at_date")
     private LocalDateTime startedAtDate;
     @JsonProperty("end_at_date")
     private LocalDateTime endAtDate;
+    @JsonProperty("direction")
+    private String direction;
 }

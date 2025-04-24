@@ -16,10 +16,10 @@ public class EmployeeDTO {
     private Long id;
     @JsonProperty("employee_name")
     private String employeeName;
-    @JsonProperty("employee_birth_date")
+    @JsonProperty("employee_birthDate")
     private Date birthDate;
     @JsonProperty("employee_sex")
     private String sex;
-    @JsonProperty("employee_blood_type")
+    @JsonProperty("employee_bloodType")
     private String bloodType;
 }

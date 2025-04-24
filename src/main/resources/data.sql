@@ -1,9 +1,9 @@
 -- 1) EMPRESAS
 INSERT INTO company (company_name, trade_name, cnpj)
 VALUES
-    ('SQLutions','SQLutions','80066680000185'),
-    ('TechNova','TechNova','57720660000164'),
-    ('EcoDrive','EcoDrive','67506602000196');
+    ('Scuderia Ferrari','Ferrari','11111111111111'),
+    ('Vasco da Gama','Vasco','22222222222222'),
+    ('sqlutions co.','sqlutions','33333333333333');
 
 -- 2) FUNCIONARIOS
 INSERT INTO employee (name, birth_date, sex, blood_type, company_id)
@@ -46,7 +46,7 @@ VALUES
 -- 4) CONTRATOS
 INSERT INTO contract (start_date, end_date, company_id, employee_id, role_id)
 VALUES
-    ('2023-01-01', '2023-12-31', 1, 1, 1),
+    ('2023-01-01', '2025-05-16', 1, 1, 1),
     ('2023-02-01', '2023-11-30', 2, 2, 2),
     ('2023-03-01', '2023-10-31', 3, 3, 3),
     ('2023-04-01', '2023-09-30', 1, 4, 10),
