@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class EmployeeListDTO {
-    private Long id;
+    @JsonProperty("id")
+    private Long idFuncionario;
     @JsonProperty("name")
-    private String name;
+    private String nome;
 }

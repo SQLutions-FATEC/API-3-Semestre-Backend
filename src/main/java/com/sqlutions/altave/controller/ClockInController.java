@@ -41,33 +41,39 @@ public class ClockInController {
 
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<ClockInResponseWithTotalDTO> searchMovimentacoes(
-            @RequestParam(required = false) Long funcionario,
-            @RequestParam(required = false) Long empresa,
-            @RequestParam(required = false) Long funcao,
+    public ResponseEntity<?> searchMovimentacoes(
+            @RequestParam(required = false) String funcionario,
+            @RequestParam(required = false) String empresa,
+            @RequestParam(required = false) String funcao,
             @RequestParam(value = "started_at", required = false) String startedAt,
             @RequestParam(value = "end_at", required = false) String endAt,
+            @RequestParam(required = false) String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
-        if (startedAt != null) {
-            startedAtDate = LocalDateTime.parse(startedAt, formatter);
-        }
-        if (endAt != null) {
-            endAtDate = LocalDateTime.parse(endAt, formatter);
+        try {
+            if (startedAt != null) {
+                startedAtDate = LocalDateTime.parse(startedAt, formatter);
+            }
+            if (endAt != null) {
+                endAtDate = LocalDateTime.parse(endAt, formatter);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
         }
 
         ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
-                .funcionario(funcionario)
-                .empresa(empresa)
-                .funcao(funcao)
+                .employee(funcionario)
+                .company(empresa)
+                .role(funcao)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
+                .direction(direction)
                 .build(), page, size);
 
         return ResponseEntity.ok(response);
