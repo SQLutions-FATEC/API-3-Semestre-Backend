@@ -42,7 +42,7 @@ public class ClockInController {
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
     public ResponseEntity<?> searchMovimentacoes(
-            @RequestParam(required = false) Long funcionario,
+            @RequestParam(required = false) String funcionario,
             @RequestParam(required = false) String empresa,
             @RequestParam(required = false) String funcao,
             @RequestParam(value = "started_at", required = false) String startedAt,

@@ -64,7 +64,9 @@ public class ClockInServiceImpl implements ClockInService {
         List<ClockIn> filtered = allClockIns.stream()
                 .filter(ci -> clockInSearchDTO.getEmployee() == null ||
                         (ci.getEmployee() != null &&
-                                ci.getEmployee().getEmployeeId().equals(clockInSearchDTO.getEmployee())))
+                                ci.getEmployee().getEmployeeName() != null &&
+                                ci.getEmployee().getEmployeeName().toLowerCase()
+                                        .contains(clockInSearchDTO.getEmployee().toLowerCase())))
                 .filter(ci -> {
                     if (clockInSearchDTO.getCompany() == null && clockInSearchDTO.getRole() == null) {
                         return true;
@@ -79,11 +81,15 @@ public class ClockInServiceImpl implements ClockInService {
 
                     boolean empresaOk = clockInSearchDTO.getCompany() == null ||
                             (contract.getCompany() != null &&
-                                    contract.getCompany().getCompanyName().equalsIgnoreCase(clockInSearchDTO.getCompany()));
+                                    contract.getCompany().getCompanyName() != null &&
+                                    contract.getCompany().getCompanyName().toLowerCase()
+                                            .contains(clockInSearchDTO.getCompany().toLowerCase()));
 
                     boolean funcaoOk = clockInSearchDTO.getRole() == null ||
                             (contract.getRole() != null &&
-                                    contract.getRole().getName().equalsIgnoreCase(clockInSearchDTO.getRole()));
+                                    contract.getRole().getName() != null &&
+                                    contract.getRole().getName().toLowerCase()
+                                            .contains(clockInSearchDTO.getRole().toLowerCase()));
 
                     return empresaOk && funcaoOk;
                 })

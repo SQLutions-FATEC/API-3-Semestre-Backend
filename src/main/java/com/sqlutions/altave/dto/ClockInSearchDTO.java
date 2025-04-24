@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class ClockInSearchDTO {
     @JsonProperty("employee")
-    private Long employee;
+    private String employee;
     @JsonProperty("company")
     private String company;
     @JsonProperty("role")
