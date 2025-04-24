@@ -73,7 +73,11 @@ public class PhotoController {
                     ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
 
             return ResponseEntity.ok()
-                    .cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS))
+                    //.cacheControl(CacheControl.maxAge(1, TimeUnit.HOURS))
+                    .cacheControl(CacheControl.noStore())
+                    .header(HttpHeaders.PRAGMA, "no-cache")
+                    .header(HttpHeaders.EXPIRES, "0")
+                    .header(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate, max-age=0")
                     .contentType(mediaType)
                     .header(HttpHeaders.CONTENT_DISPOSITION,
                             "inline; filename=\"" + photo.getOriginalFilename() + "\"")
