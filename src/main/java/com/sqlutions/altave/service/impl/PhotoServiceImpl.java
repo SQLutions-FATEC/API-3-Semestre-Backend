@@ -112,17 +112,26 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Resource getPhotoResourceByEmployeeId(Long employeeId) {
+        Photo photo = photoRepository.findByEmployee_EmployeeId(employeeId);
+        if (photo == null) {
+            throw new RuntimeException("Foto não encontrada");
+        }
+
         try {
-            Photo photo = getPhotoByEmployeeId(employeeId);
-            UrlResource resource = new UrlResource(Paths.get(photo.getPath()).toUri());
+            Path path = Paths.get(photo.getPath());
+            System.out.println("Loading photo from path: " + path);
+            Resource resource = new UrlResource(path.toUri());
+
             if (!resource.exists() || !resource.isReadable()) {
-                throw new RuntimeException("Arquivo não pode ser lido: " + photo.getOriginalFilename());
+                throw new RuntimeException("Arquivo não pode ser lido");
             }
+
             return resource;
         } catch (MalformedURLException e) {
-            throw new RuntimeException("URL inválida para o arquivo da foto", e);
+            throw new RuntimeException("Erro ao carregar a imagem", e);
         }
     }
+
 
     @Override
     public void deletePhotoByEmployeeId(Long employeeId) {
