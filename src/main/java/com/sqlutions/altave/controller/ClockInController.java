@@ -43,8 +43,8 @@ public class ClockInController {
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
     public ResponseEntity<?> searchMovimentacoes(
             @RequestParam(required = false) Long funcionario,
-            @RequestParam(required = false) Long empresa,
-            @RequestParam(required = false) Long funcao,
+            @RequestParam(required = false) String empresa,
+            @RequestParam(required = false) String funcao,
             @RequestParam(value = "started_at", required = false) String startedAt,
             @RequestParam(value = "end_at", required = false) String endAt,
             @RequestParam(required = false) String direction,

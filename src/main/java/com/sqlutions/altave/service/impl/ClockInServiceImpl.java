@@ -79,11 +79,11 @@ public class ClockInServiceImpl implements ClockInService {
 
                     boolean empresaOk = clockInSearchDTO.getCompany() == null ||
                             (contract.getCompany() != null &&
-                                    contract.getCompany().getCompanyId().equals(clockInSearchDTO.getCompany()));
+                                    contract.getCompany().getCompanyName().equalsIgnoreCase(clockInSearchDTO.getCompany()));
 
                     boolean funcaoOk = clockInSearchDTO.getRole() == null ||
                             (contract.getRole() != null &&
-                                    contract.getRole().getRoleId().equals(clockInSearchDTO.getRole()));
+                                    contract.getRole().getName().equalsIgnoreCase(clockInSearchDTO.getRole()));
 
                     return empresaOk && funcaoOk;
                 })

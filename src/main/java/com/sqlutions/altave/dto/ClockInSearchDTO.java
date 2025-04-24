@@ -16,9 +16,9 @@ public class ClockInSearchDTO {
     @JsonProperty("employee")
     private Long employee;
     @JsonProperty("company")
-    private Long company;
+    private String company;
     @JsonProperty("role")
-    private Long role;
+    private String role;
     @JsonProperty("started_at_date")
     private LocalDateTime startedAtDate;
     @JsonProperty("end_at_date")
