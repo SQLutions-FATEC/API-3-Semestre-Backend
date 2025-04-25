@@ -24,15 +24,8 @@ public class Employee {
     private String sex;
     private String bloodType;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-
-    @Setter
-    @Getter
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Contract> contracts;
 
     @OneToMany(mappedBy = "employee")
     private Set<ClockIn> clockIns;

@@ -1,8 +1,13 @@
 package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.CompanyDTO;
+import com.sqlutions.altave.entity.ClockIn;
 import com.sqlutions.altave.entity.Company;
+import com.sqlutions.altave.entity.Contract;
+import com.sqlutions.altave.entity.Employee;
+import com.sqlutions.altave.repository.ClockInRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
+import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +20,12 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private ContractRepository contractRepository;
+
+    @Autowired
+    private ClockInRepository clockInRepository;
 
     @Override
     public List<CompanyDTO> getAllCompanies() {
@@ -52,7 +63,21 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public void deleteCompany(Long id) {
-        companyRepository.deleteById(id);
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
+
+        List<Contract> contracts = contractRepository.findByCompany(company);
+
+        for (Contract contract : contracts) {
+            Employee employee = contract.getEmployee();
+            List<ClockIn> clockIns = clockInRepository.findByEmployee(employee);
+
+            clockInRepository.deleteAll(clockIns);
+
+            contractRepository.delete(contract);
+        }
+
+        companyRepository.delete(company);
     }
 
     private CompanyDTO convertToDTO(Company company) {
