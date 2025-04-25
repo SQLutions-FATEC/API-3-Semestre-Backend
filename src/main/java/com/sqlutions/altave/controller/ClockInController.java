@@ -42,11 +42,11 @@ public class ClockInController {
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
     public ResponseEntity<?> searchMovimentacoes(
-            @RequestParam(required = false) String funcionario,
-            @RequestParam(required = false) String empresa,
-            @RequestParam(required = false) String funcao,
-            @RequestParam(value = "started_at", required = false) String startedAt,
-            @RequestParam(value = "end_at", required = false) String endAt,
+            @RequestParam(required = false) String employee,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String start_date,
+            @RequestParam(required = false) String end_date,
             @RequestParam(required = false) String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -57,20 +57,20 @@ public class ClockInController {
         LocalDateTime endAtDate = null;
 
         try {
-            if (startedAt != null) {
-                startedAtDate = LocalDateTime.parse(startedAt, formatter);
+            if (start_date != null) {
+                startedAtDate = LocalDateTime.parse(start_date, formatter);
             }
-            if (endAt != null) {
-                endAtDate = LocalDateTime.parse(endAt, formatter);
+            if (end_date != null) {
+                endAtDate = LocalDateTime.parse(end_date, formatter);
             }
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
         }
 
         ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
-                .employee(funcionario)
-                .company(empresa)
-                .role(funcao)
+                .employee(employee)
+                .company(company)
+                .role(role)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
                 .direction(direction)
