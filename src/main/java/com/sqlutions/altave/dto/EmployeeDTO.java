@@ -13,9 +13,11 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class EmployeeDTO {
-    private Long id;
+    private Long employeeId;
     @JsonProperty("employee_name")
     private String employeeName;
+    @JsonProperty("register_number")
+    private String registerNumber;
     @JsonProperty("employee_birthDate")
     private Date birthDate;
     @JsonProperty("employee_sex")

@@ -213,6 +213,7 @@ public class ClockInServiceImpl implements ClockInService {
     private EmployeeListDTO mapToFuncionarioListDTO(Employee employee) {
         return EmployeeListDTO.builder()
                 .idFuncionario(employee.getEmployeeId())
+                .registerNumber(employee.getRegisterNumber())
                 .nome(employee.getEmployeeName())
                 .build();
     }

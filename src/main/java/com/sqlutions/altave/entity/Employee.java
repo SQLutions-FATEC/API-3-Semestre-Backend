@@ -14,8 +14,11 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String employeeName;
+
+    @Column(name = "register_number", nullable = false, unique = true)
+    private String registerNumber;
 
     private Date birthDate;
     private String sex;

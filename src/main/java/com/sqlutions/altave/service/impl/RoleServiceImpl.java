@@ -1,6 +1,8 @@
 package com.sqlutions.altave.service.impl;
 
+import com.sqlutions.altave.dto.CompanyDTO;
 import com.sqlutions.altave.dto.RoleDTO;
+import com.sqlutions.altave.entity.Company;
 import com.sqlutions.altave.entity.Role;
 import com.sqlutions.altave.repository.RoleRepository;
 import com.sqlutions.altave.service.RoleService;
@@ -26,5 +28,18 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    private RoleDTO convertToDTO(Role role) {
+        return new RoleDTO(
+                role.getId(),
+                role.getName()
+        );
+    }
+
+    private Role convertToEntity(RoleDTO roleDTO) {
+        Role role = new Role();
+        role.setName(roleDTO.getName());
+        return role;
     }
 }
