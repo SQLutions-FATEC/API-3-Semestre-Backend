@@ -7,13 +7,14 @@ import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
 import com.sqlutions.altave.repository.EmployeeRepository;
 import com.sqlutions.altave.repository.RoleRepository;
+import com.sqlutions.altave.service.ContractService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ContractServiceImpl {
+public class ContractServiceImpl implements ContractService {
 
     private final ContractRepository contractRepository;
     private final EmployeeRepository employeeRepository;
