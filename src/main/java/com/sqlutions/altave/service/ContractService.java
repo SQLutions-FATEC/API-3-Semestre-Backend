@@ -6,6 +6,7 @@ import com.sqlutions.altave.entity.Contract;
 import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
 import com.sqlutions.altave.repository.EmployeeRepository;
+import com.sqlutions.altave.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,19 +18,23 @@ public class ContractService {
     private final ContractRepository contractRepository;
     private final EmployeeRepository employeeRepository;
     private final CompanyRepository companyRepository;
+    private final RoleRepository roleRepository;
 
     public ContractService(ContractRepository contractRepository,
                            EmployeeRepository employeeRepository,
-                           CompanyRepository companyRepository) {
+                           CompanyRepository companyRepository,
+                           RoleRepository roleRepository) {
         this.contractRepository = contractRepository;
         this.employeeRepository = employeeRepository;
         this.companyRepository = companyRepository;
+        this.roleRepository = roleRepository;
     }
 
     public ContractResponseDTO createContract(ContractRequestDTO dto) {
         Contract contract = new Contract();
         contract.setEmployee(employeeRepository.findById(dto.getEmployeeId()).orElseThrow());
         contract.setCompany(companyRepository.findById(dto.getCompanyId()).orElseThrow());
+        contract.setRole(roleRepository.findById(dto.getRoleId()).orElseThrow());
         contract.setStartDate(dto.getStartDate());
         contract.setEndDate(dto.getEndDate());
 
@@ -40,6 +45,7 @@ public class ContractService {
         Contract contract = contractRepository.findById(contractId).orElseThrow();
         contract.setEmployee(employeeRepository.findById(dto.getEmployeeId()).orElseThrow());
         contract.setCompany(companyRepository.findById(dto.getCompanyId()).orElseThrow());
+        contract.setRole(roleRepository.findById(dto.getRoleId()).orElseThrow());
         contract.setStartDate(dto.getStartDate());
         contract.setEndDate(dto.getEndDate());
 
