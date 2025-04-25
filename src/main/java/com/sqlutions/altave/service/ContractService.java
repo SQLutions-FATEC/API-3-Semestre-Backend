@@ -1,0 +1,66 @@
+package com.sqlutions.altave.service;
+
+import com.sqlutions.altave.dto.ContractRequestDTO;
+import com.sqlutions.altave.dto.ContractResponseDTO;
+import com.sqlutions.altave.entity.Contract;
+import com.sqlutions.altave.repository.ContractRepository;
+import com.sqlutions.altave.repository.CompanyRepository;
+import com.sqlutions.altave.repository.EmployeeRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ContractService {
+
+    private final ContractRepository contractRepository;
+    private final EmployeeRepository employeeRepository;
+    private final CompanyRepository companyRepository;
+
+    public ContractService(ContractRepository contractRepository,
+                           EmployeeRepository employeeRepository,
+                           CompanyRepository companyRepository) {
+        this.contractRepository = contractRepository;
+        this.employeeRepository = employeeRepository;
+        this.companyRepository = companyRepository;
+    }
+
+    public ContractResponseDTO createContract(ContractRequestDTO dto) {
+        Contract contract = new Contract();
+        contract.setEmployee(employeeRepository.findById(dto.getEmployeeId()).orElseThrow());
+        contract.setCompany(companyRepository.findById(dto.getCompanyId()).orElseThrow());
+        contract.setStartDate(dto.getStartDate());
+        contract.setEndDate(dto.getEndDate());
+
+        return new ContractResponseDTO(contractRepository.save(contract));
+    }
+
+    public ContractResponseDTO updateContract(Long contractId, ContractRequestDTO dto) {
+        Contract contract = contractRepository.findById(contractId).orElseThrow();
+        contract.setEmployee(employeeRepository.findById(dto.getEmployeeId()).orElseThrow());
+        contract.setCompany(companyRepository.findById(dto.getCompanyId()).orElseThrow());
+        contract.setStartDate(dto.getStartDate());
+        contract.setEndDate(dto.getEndDate());
+
+        return new ContractResponseDTO(contractRepository.save(contract));
+    }
+
+    public void deleteContract(Long contractId) {
+        contractRepository.deleteById(contractId);
+    }
+
+    public List<ContractResponseDTO> getContractsByEmployee(Long employeeId) {
+        return contractRepository.findAll().stream()
+                .filter(c -> c.getEmployee().getEmployeeId().equals(employeeId))
+                .map(ContractResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<ContractResponseDTO> getContractsByCompany(Long companyId) {
+        return contractRepository.findAll().stream()
+                .filter(c -> c.getCompany().getCompanyId().equals(companyId))
+                .map(ContractResponseDTO::new)
+                .collect(Collectors.toList());
+    }
+}
