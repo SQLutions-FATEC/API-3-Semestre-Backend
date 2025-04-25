@@ -82,7 +82,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private CompanyDTO convertToDTO(Company company) {
         return new CompanyDTO(
-                company.getCompanyId(),
+                company.getId(),
                 company.getCompanyName(),
                 company.getCnpj(),
                 company.getTradeName()

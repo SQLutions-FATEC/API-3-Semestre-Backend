@@ -178,7 +178,7 @@ public class ClockInServiceImpl implements ClockInService {
 
                 if (contract.getCompany() != null) {
                     companyDTO = new CompanyListDTO(
-                            contract.getCompany().getCompanyId(),
+                            contract.getCompany().getId(),
                             contract.getCompany().getCompanyName()
                     );
                 }

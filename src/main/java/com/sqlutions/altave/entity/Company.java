@@ -12,7 +12,7 @@ import java.util.Set;
 public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long companyId;
+    private Long id;
     private String companyName;
     private String tradeName;
     private String cnpj;
