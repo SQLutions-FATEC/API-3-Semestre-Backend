@@ -1,33 +1,33 @@
 -- 1) EMPRESAS
 INSERT INTO company (company_name, trade_name, cnpj)
 VALUES
-    ('SQLutions','SQLutions','80066680000185'),
-    ('TechNova','TechNova','57720660000164'),
-    ('EcoDrive','EcoDrive','67506602000196');
+    ('Scuderia Ferrari','Ferrari','11111111111111'),
+    ('Vasco da Gama','Vasco','22222222222222'),
+    ('sqlutions co.','sqlutions','33333333333333');
 
 -- 2) FUNCIONARIOS
 INSERT INTO employee (name, birth_date, sex, blood_type)
 VALUES
-    ('Davi','1993-01-01','M','A\+'),
-    ('Augusto','1987-02-02','M','O\+'),
-    ('Nicole','1990-03-21','F','A\-'),
-    ('Cainã','1991-01-04','M','O\+'),
-    ('Nathalia','1994-01-05','F','O\+'),
-    ('Roberto','1999-01-06','M','O\+'),
-    ('Glória','1990-01-07','F','O\-'),
-    ('João','1990-12-08','M','O\+'),
-    ('Luana','1992-01-09','F','AB\+'),
-    ('Bryan','1999-10-10','M','O\+'),
-    ('Enzo','1994-01-28','M','O\-'),
-    ('Lucas','1990-01-12','M','O\+'),
-    ('Mineda','1990-08-13','M','O\-'),
-    ('Daniel','1982-01-14','M','B\+'),
-    ('Carlos','1997-01-15','M','O\+'),
-    ('Felipe','1990-01-16','M','O\-'),
-    ('Bruno','1996-04-17','M','O\+'),
-    ('Renata','1990-05-17','F','A\-'),
-    ('Matheus','1991-01-21','M','O\+'),
-    ('Mirian','1989-01-20','F','A\+');
+    ('Davi','1990-01-01','M','O\+'),
+    ('Augusto','1990-01-02','M','O\+'),
+    ('Tiago','1990-01-03','M','O\+'),
+    ('Cainã','1990-01-04','M','O\+'),
+    ('Celso','1990-01-05','M','O\+'),
+    ('Devanir','1990-01-06','M','O\+'),
+    ('Gloria','1990-01-07','M','O\+'),
+    ('Joao','1990-01-08','M','O\+'),
+    ('Lucas','1990-01-09','M','O\+'),
+    ('Bryan','1990-01-10','M','O\+'),
+    ('Enzo','1990-01-11','M','O\+'),
+    ('Nadalete','1990-01-12','M','O\+'),
+    ('Mineda','1990-01-13','M','O\+'),
+    ('Daniel Floriano','1990-01-14','M','O\+'),
+    ('Carlota','1990-01-15','M','O\+'),
+    ('Sim','1990-01-16','M','O\+'),
+    ('Batman','1990-01-17','M','O\+'),
+    ('Yuri Alberto','1990-01-18','M','O\+'),
+    ('Ayrton Senna','1990-01-19','M','O\+'),
+    ('Eu','1990-01-20','M','O\+');
 
 -- 3) CARGOS
 INSERT INTO role (name)
@@ -46,7 +46,7 @@ VALUES
 -- 4) CONTRATOS
 INSERT INTO contract (start_date, end_date, company_id, employee_id, role_id)
 VALUES
-    ('2023-01-01', '2023-12-31', 1, 1, 1),
+    ('2023-01-01', '2025-05-16', 1, 1, 1),
     ('2023-02-01', '2023-11-30', 2, 2, 2),
     ('2023-03-01', '2023-10-31', 3, 3, 3),
     ('2023-04-01', '2023-09-30', 1, 4, 10),

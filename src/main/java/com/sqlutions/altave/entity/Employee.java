@@ -13,13 +13,25 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
+
     @Column(name = "name")
     private String employeeName;
+
     private Date birthDate;
     private String sex;
     private String bloodType;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    @Setter
+    @Getter
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
     @OneToMany(mappedBy = "employee")
     private Set<ClockIn> clockIns;
-}
 
+}
