@@ -29,8 +29,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeDTO getEmployeeById(Long id){
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+        Employee employee = employeeRepository.findByEmployeeIdAndDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado ou foi deletado"));
         return convertToDTO(employee);
     }
 
