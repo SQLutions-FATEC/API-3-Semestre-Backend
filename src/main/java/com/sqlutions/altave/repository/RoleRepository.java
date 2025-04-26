@@ -1,0 +1,7 @@
+package com.sqlutions.altave.repository;
+
+import com.sqlutions.altave.entity.Role;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface RoleRepository extends JpaRepository<Role, Long> {
+}
