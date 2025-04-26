@@ -6,29 +6,30 @@ VALUES
     ('sqlutions co.','sqlutions','33333333333333');
 
 -- 2) FUNCIONARIOS
-INSERT INTO employee (name, birth_date, sex, blood_type, company_id)
+INSERT INTO employee (name, birth_date, sex, blood_type, company_id, deleted)
 VALUES
+    ('Davi', '1990-01-01', 'M', 'O+', 1, false),
+    ('Augusto', '1990-01-02', 'M', 'O+', 2, false),
+    ('Tiago', '1990-01-03', 'M', 'O+', 3, false),
+    ('Cainã', '1990-01-04', 'M', 'O+', 1, false),
+    ('Celso', '1990-01-05', 'M', 'O+', 2, false),
+    ('Devanir', '1990-01-06', 'M', 'O+', 3, false),
+    ('Gloria', '1990-01-07', 'M', 'O+', 1, false),
+    ('Joao', '1990-01-08', 'M', 'O+', 2, false),
+    ('Lucas', '1990-01-09', 'M', 'O+', 3, false),
+    ('Bryan', '1990-01-10', 'M', 'O+', 1, false),
+    ('Enzo', '1990-01-11', 'M', 'O+', 2, false),
+    ('Nadalete', '1990-01-12', 'M', 'O+', 3, false),
+    ('Mineda', '1990-01-13', 'M', 'O+', 1, false),
+    ('Daniel Floriano', '1990-01-14', 'M', 'O+', 2, false),
+    ('Carlota', '1990-01-15', 'M', 'O+', 3, false),
+    ('Sim', '1990-01-16', 'M', 'O+', 1, false),
+    ('Batman', '1990-01-17', 'M', 'O+', 2, false),
+    ('Yuri Alberto', '1990-01-18', 'M', 'O+', 3, false),
+    ('Ayrton Senna', '1990-01-19', 'M', 'O+', 1, false),
+    ('Eu', '1990-01-20', 'M', 'O+', 2, false);
 
-    ('Davi','1990-01-01','M','O+', 1),
-    ('Augusto','1990-01-02','M','O+', 2),
-    ('Tiago','1990-01-03','M','O+', 3),
-    ('Cainã','1990-01-04','M','O+', 1),
-    ('Celso','1990-01-05','M','O+', 2),
-    ('Devanir','1990-01-06','M','O+', 3),
-    ('Gloria','1990-01-07','M','O+', 1),
-    ('Joao','1990-01-08','M','O+', 2),
-    ('Lucas','1990-01-09','M','O+', 3),
-    ('Bryan','1990-01-10','M','O+', 1),
-    ('Enzo','1990-01-11','M','O+', 2),
-    ('Nadalete','1990-01-12','M','O+', 3),
-    ('Mineda','1990-01-13','M','O+', 1),
-    ('Daniel Floriano','1990-01-14','M','O+', 2),
-    ('Carlota','1990-01-15','M','O+', 3),
-    ('Sim','1990-01-16','M','O+', 1),
-    ('Batman','1990-01-17','M','O+', 2),
-    ('Yuri Alberto','1990-01-18','M','O+', 3),
-    ('Ayrton Senna','1990-01-19','M','O+', 1),
-    ('Eu','1990-01-20','M','O+', 2);
+ALTER TABLE employee ALTER COLUMN deleted SET DEFAULT false;
 -- 3) CARGOS
 INSERT INTO role (name)
 VALUES
