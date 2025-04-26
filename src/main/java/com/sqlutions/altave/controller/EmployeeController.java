@@ -49,5 +49,18 @@ public class EmployeeController {
         List<EmployeeDTO> employees = employeeService.getAllEmployees();
         return ResponseEntity.ok(employees);
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Endpoint para deletar funcionário")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/active")
+    @Operation(summary = "Endpoint para buscar os funcionários ativos")
+    public List<EmployeeDTO> getAllActiveEmployees() {
+        return employeeService.getAllActiveEmployees();
+    }
 }
 
