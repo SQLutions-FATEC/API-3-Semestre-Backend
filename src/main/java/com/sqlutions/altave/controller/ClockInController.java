@@ -4,7 +4,6 @@ import com.sqlutions.altave.dto.ClockInRequestDTO;
 import com.sqlutions.altave.dto.ClockInResponseDTO;
 import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
 import com.sqlutions.altave.dto.ClockInSearchDTO;
-import com.sqlutions.altave.dto.ClockInTimeUpdateDTO;
 import com.sqlutions.altave.service.ClockInService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -91,12 +90,5 @@ public class ClockInController {
     public ResponseEntity<ClockInResponseDTO> deleteMovimentacao(@PathVariable Long id) {
         ClockInResponseDTO deletedMovimentacao = clockInService.deleteClockIn(id);
         return ResponseEntity.ok(deletedMovimentacao);
-    }
-
-    @PatchMapping("/clock_in/{id}")
-    @Operation(summary = "Endpoint para atualizar o horário de uma movimentação")
-    public ResponseEntity<ClockInResponseDTO> updateClockInDatetime(@PathVariable Long id, @RequestBody ClockInTimeUpdateDTO dto) {
-        ClockInResponseDTO updated = clockInService.updateClockInDatetime(id, dto);
-        return ResponseEntity.ok(updated);
     }
 }

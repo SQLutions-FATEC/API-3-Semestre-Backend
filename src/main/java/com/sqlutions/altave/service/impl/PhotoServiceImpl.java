@@ -8,8 +8,10 @@ import com.sqlutions.altave.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,10 +32,17 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public void photoSave(MultipartFile foto, Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+
+        Photo existingPhoto = null;
         try {
-            Employee employee = employeeRepository.findById(employeeId)
-                    .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
-            Photo existingPhoto = photoRepository.findByEmployee_EmployeeId(employeeId);
+            existingPhoto = photoRepository.findByEmployeeId(employeeId);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar foto existente: " + e.getMessage());
+        }
+
+        try {
             if (existingPhoto != null) {
                 Files.deleteIfExists(Paths.get(existingPhoto.getPath()));
                 photoRepository.delete(existingPhoto);
@@ -93,7 +102,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Photo getPhotoByEmployeeId(Long employeeId) {
-        Photo photo = photoRepository.findByEmployee_EmployeeId(employeeId);
+        Photo photo = photoRepository.findByEmployeeId(employeeId);
         if (photo == null) {
             throw new RuntimeException("Nenhuma foto encontrada para o funcionário ID " + employeeId);
         }
@@ -112,13 +121,19 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Resource getPhotoResourceByEmployeeId(Long employeeId) {
-        Photo photo = photoRepository.findByEmployee_EmployeeId(employeeId);
-        if (photo == null) {
-            throw new RuntimeException("Foto não encontrada");
+        Photo existingPhoto = null;
+        try {
+            existingPhoto = photoRepository.findByEmployeeId(employeeId);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar foto existente: " + e.getMessage());
+        }
+
+        if (existingPhoto == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Foto não encontrada");
         }
 
         try {
-            Path path = Paths.get(photo.getPath());
+            Path path = Paths.get(existingPhoto.getPath());
             System.out.println("Loading photo from path: " + path);
             Resource resource = new UrlResource(path.toUri());
 
@@ -132,10 +147,9 @@ public class PhotoServiceImpl implements PhotoService {
         }
     }
 
-
     @Override
     public void deletePhotoByEmployeeId(Long employeeId) {
-        Photo existingPhoto = photoRepository.findByEmployee_EmployeeId(employeeId);
+        Photo existingPhoto = photoRepository.findByEmployeeId(employeeId);
         if (existingPhoto == null) {
             throw new RuntimeException("Nenhuma foto encontrada para o funcionário ID " + employeeId);
         }

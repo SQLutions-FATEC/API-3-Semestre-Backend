@@ -66,9 +66,10 @@ public class PhotoController {
             produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE }
     )
     public ResponseEntity<Resource> servePhotoAsResource(@PathVariable Long employeeId) {
+        Resource resource = photoService.getPhotoResourceByEmployeeId(employeeId);
+        Photo photo = photoService.getPhotoByEmployeeId(employeeId);
+
         try {
-            Resource resource = photoService.getPhotoResourceByEmployeeId(employeeId);
-            Photo photo = photoService.getPhotoByEmployeeId(employeeId);
             MediaType mediaType = photo.getOriginalFilename().toLowerCase().endsWith(".png")
                     ? MediaType.IMAGE_PNG : MediaType.IMAGE_JPEG;
 
