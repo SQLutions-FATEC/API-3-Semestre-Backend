@@ -19,5 +19,8 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contract> contracts;
+
+    @Column(nullable = false)
+    private Boolean deleted = false;
 }
 
