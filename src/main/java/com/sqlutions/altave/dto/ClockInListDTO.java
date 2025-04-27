@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ClockInListDTO {
     private Long id;
-    /*@JsonProperty("register_number")
-    private Long numeroRegistro;*/
     @JsonProperty("employee")
     private EmployeeListDTO employee;
     @JsonProperty("company")

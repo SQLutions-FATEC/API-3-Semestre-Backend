@@ -32,7 +32,7 @@ public class RoleServiceImpl implements RoleService {
 
     private RoleDTO convertToDTO(Role role) {
         return new RoleDTO(
-                role.getRoleId(),
+                role.getId(),
                 role.getName()
         );
     }

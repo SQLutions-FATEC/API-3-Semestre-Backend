@@ -14,22 +14,18 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String employeeName;
+
+    @Column(name = "register_number", nullable = false, unique = true)
+    private String registerNumber;
 
     private Date birthDate;
     private String sex;
     private String bloodType;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
-
-    @Setter
-    @Getter
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Contract> contracts;
 
     @OneToMany(mappedBy = "employee")
     private Set<ClockIn> clockIns;

@@ -178,7 +178,7 @@ public class ClockInServiceImpl implements ClockInService {
 
                 if (contract.getCompany() != null) {
                     companyDTO = new CompanyListDTO(
-                            contract.getCompany().getCompanyId(),
+                            contract.getCompany().getId(),
                             contract.getCompany().getCompanyName()
                     );
                 }
@@ -213,6 +213,7 @@ public class ClockInServiceImpl implements ClockInService {
     private EmployeeListDTO mapToFuncionarioListDTO(Employee employee) {
         return EmployeeListDTO.builder()
                 .idFuncionario(employee.getEmployeeId())
+                .registerNumber(employee.getRegisterNumber())
                 .nome(employee.getEmployeeName())
                 .build();
     }
