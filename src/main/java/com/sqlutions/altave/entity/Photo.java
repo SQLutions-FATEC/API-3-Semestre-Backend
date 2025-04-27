@@ -2,6 +2,7 @@ package com.sqlutions.altave.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 import java.time.LocalDateTime;
 
@@ -9,18 +10,16 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@ToString(exclude = "employee")
-@EqualsAndHashCode(exclude = "employee")
-public class ClockIn {
+public class Photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long clockInId;
-    private LocalDateTime dateTime;
-    private String direction;
+    private Long photoId;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
-}
 
+    private String path;
+    private LocalDateTime creationDate;
+    private String originalFilename;
+}

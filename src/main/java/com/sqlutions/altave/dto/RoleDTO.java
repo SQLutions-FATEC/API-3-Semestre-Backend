@@ -6,15 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class ClockInResponseWithTotalDTO {
-    @JsonProperty("items")
-    private List<ClockInListDTO> items;
-    @JsonProperty("total")
-    private long total;
+public class RoleDTO {
+    private Long id;
+    @JsonProperty("name")
+    private String name;
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Data
@@ -17,7 +18,7 @@ public class Contract {
     private LocalDate endDate;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
     @ManyToOne
@@ -27,5 +28,10 @@ public class Contract {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    public boolean isActive(LocalDate today) {
+        return (startDate != null && !startDate.isAfter(today) &&
+                (endDate != null && !endDate.isBefore(today)));
+    }
 }
 
