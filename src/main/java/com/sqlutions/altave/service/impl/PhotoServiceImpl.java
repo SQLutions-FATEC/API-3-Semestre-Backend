@@ -35,7 +35,7 @@ public class PhotoServiceImpl implements PhotoService {
 
         Photo existingPhoto = null;
         try {
-            existingPhoto = photoRepository.findByEmployee_Id(employeeId);
+            existingPhoto = photoRepository.findByEmployeeId(employeeId);
         } catch (Exception e) {
             System.err.println("Erro ao buscar foto existente: " + e.getMessage());
         }
@@ -100,7 +100,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Photo getPhotoByEmployeeId(Long employeeId) {
-        Photo photo = photoRepository.findByEmployee_Id(employeeId);
+        Photo photo = photoRepository.findByEmployeeId(employeeId);
         if (photo == null) {
             throw new RuntimeException("Nenhuma foto encontrada para o funcionário ID " + employeeId);
         }
@@ -119,13 +119,19 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Resource getPhotoResourceByEmployeeId(Long employeeId) {
-        Photo photo = photoRepository.findByEmployee_Id(employeeId);
-        if (photo == null) {
+        Photo existingPhoto = null;
+        try {
+            existingPhoto = photoRepository.findByEmployeeId(employeeId);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar foto existente: " + e.getMessage());
+        }
+
+        if (existingPhoto == null) {
             throw new RuntimeException("Foto não encontrada");
         }
 
         try {
-            Path path = Paths.get(photo.getPath());
+            Path path = Paths.get(existingPhoto.getPath());
             System.out.println("Loading photo from path: " + path);
             Resource resource = new UrlResource(path.toUri());
 
@@ -139,10 +145,9 @@ public class PhotoServiceImpl implements PhotoService {
         }
     }
 
-
     @Override
     public void deletePhotoByEmployeeId(Long employeeId) {
-        Photo existingPhoto = photoRepository.findByEmployee_Id(employeeId);
+        Photo existingPhoto = photoRepository.findByEmployeeId(employeeId);
         if (existingPhoto == null) {
             throw new RuntimeException("Nenhuma foto encontrada para o funcionário ID " + employeeId);
         }

@@ -11,16 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Photo {
-    @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
-
-    @Formula("(select e.name from employee e where e.employee_id = employee_id)")
-    private String employeeName;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long photoId;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     private String path;
     private LocalDateTime creationDate;
