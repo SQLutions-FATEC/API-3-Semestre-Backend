@@ -51,7 +51,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeDTO convertToDTO(Employee employee) {
         return new EmployeeDTO(
-                employee.getEmployeeId(),
+                employee.getId(),
                 employee.getEmployeeName(),
                 employee.getRegisterNumber(),
                 employee.getBirthDate(),

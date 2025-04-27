@@ -33,7 +33,7 @@ public class PhotoServiceImpl implements PhotoService {
         try {
             Employee employee = employeeRepository.findById(employeeId)
                     .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
-            Photo existingPhoto = photoRepository.findByEmployee_EmployeeId(employeeId);
+            Photo existingPhoto = photoRepository.findByEmployee_Id(employeeId);
             if (existingPhoto != null) {
                 Files.deleteIfExists(Paths.get(existingPhoto.getPath()));
                 photoRepository.delete(existingPhoto);
@@ -93,7 +93,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Photo getPhotoByEmployeeId(Long employeeId) {
-        Photo photo = photoRepository.findByEmployee_EmployeeId(employeeId);
+        Photo photo = photoRepository.findByEmployee_Id(employeeId);
         if (photo == null) {
             throw new RuntimeException("Nenhuma foto encontrada para o funcionário ID " + employeeId);
         }
@@ -112,7 +112,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Resource getPhotoResourceByEmployeeId(Long employeeId) {
-        Photo photo = photoRepository.findByEmployee_EmployeeId(employeeId);
+        Photo photo = photoRepository.findByEmployee_Id(employeeId);
         if (photo == null) {
             throw new RuntimeException("Foto não encontrada");
         }
@@ -135,7 +135,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public void deletePhotoByEmployeeId(Long employeeId) {
-        Photo existingPhoto = photoRepository.findByEmployee_EmployeeId(employeeId);
+        Photo existingPhoto = photoRepository.findByEmployee_Id(employeeId);
         if (existingPhoto == null) {
             throw new RuntimeException("Nenhuma foto encontrada para o funcionário ID " + employeeId);
         }
