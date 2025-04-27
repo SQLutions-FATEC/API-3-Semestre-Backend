@@ -8,8 +8,10 @@ import com.sqlutions.altave.service.PhotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -127,7 +129,7 @@ public class PhotoServiceImpl implements PhotoService {
         }
 
         if (existingPhoto == null) {
-            throw new RuntimeException("Foto não encontrada");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Foto não encontrada");
         }
 
         try {
