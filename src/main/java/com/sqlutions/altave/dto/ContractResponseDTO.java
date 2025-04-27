@@ -16,8 +16,8 @@ public class ContractResponseDTO {
     public ContractResponseDTO(Contract contract) {
         this.contractId = contract.getContractId();
         this.employeeId = contract.getEmployee().getEmployeeId();
-        this.companyId = contract.getCompany().getCompanyId();
-        this.roleId = contract.getRole().getRoleId();
+        this.companyId = contract.getCompany().getId();
+        this.roleId = contract.getRole().getId();
         this.startDate = contract.getStartDate();
         this.endDate = contract.getEndDate();
     }
