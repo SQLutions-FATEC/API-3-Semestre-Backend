@@ -30,10 +30,17 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public void photoSave(MultipartFile foto, Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+
+        Photo existingPhoto = null;
         try {
-            Employee employee = employeeRepository.findById(employeeId)
-                    .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
-            Photo existingPhoto = photoRepository.findByEmployee_Id(employeeId);
+            existingPhoto = photoRepository.findByEmployee_Id(employeeId);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar foto existente: " + e.getMessage());
+        }
+
+        try {
             if (existingPhoto != null) {
                 Files.deleteIfExists(Paths.get(existingPhoto.getPath()));
                 photoRepository.delete(existingPhoto);
