@@ -10,15 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -28,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 @RequestMapping("/clock_in")
 @Tag(name = "Clock ins", description = "APIs para gerenciamento de movimentações")
 public class ClockInController {
+
     @Autowired
     private ClockInService clockInService;
 
@@ -47,29 +40,39 @@ public class ClockInController {
 
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<ClockInResponseWithTotalDTO> searchMovimentacoes(
-            @RequestParam(required = false) Long funcionario,
-            @RequestParam(required = false) Long empresa,
-            @RequestParam(required = false) Long funcao,
-            @RequestParam(value = "started_at", required = false) String startedAt,
-            @RequestParam(value = "end_at", required = false) String endAt,
+    public ResponseEntity<?> searchMovimentacoes(
+            @RequestParam(required = false) String employee,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String start_date,
+            @RequestParam(required = false) String end_date,
+            @RequestParam(required = false) String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
-        if (startedAt != null) { startedAtDate = LocalDateTime.parse(startedAt, formatter); }
-        if (endAt != null) { endAtDate = LocalDateTime.parse(endAt, formatter); }
+        try {
+            if (start_date != null) {
+                startedAtDate = LocalDateTime.parse(start_date, formatter);
+            }
+            if (end_date != null) {
+                endAtDate = LocalDateTime.parse(end_date, formatter);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
+        }
 
         ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
-                .funcionario(funcionario)
-                .empresa(empresa)
-                .funcao(funcao)
+                .employee(employee)
+                .company(company)
+                .role(role)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
+                .direction(direction)
                 .build(), page, size);
 
         return ResponseEntity.ok(response);

@@ -1,9 +1,6 @@
 package com.sqlutions.altave.service;
 
-import com.sqlutions.altave.dto.ClockInRequestDTO;
-import com.sqlutions.altave.dto.ClockInResponseDTO;
-import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
-import com.sqlutions.altave.dto.ClockInSearchDTO;
+import com.sqlutions.altave.dto.*;
 
 import java.text.ParseException;
 
