@@ -46,4 +46,9 @@ public class ContractController {
     public ResponseEntity<List<ContractResponseDTO>> getContractsByCompany(@PathVariable Long companyId) {
         return ResponseEntity.ok(contractService.getContractsByCompany(companyId));
     }
+
+    @PutMapping("/{contractId}/inactivate")
+    public ResponseEntity<ContractResponseDTO> inactivateContract(@PathVariable Long contractId) {
+        return ResponseEntity.ok(contractService.inactivateContract(contractId));
+    }
 }
