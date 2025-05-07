@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ public class ClockInServiceImpl implements ClockInService {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
         ClockIn clockIn = ClockIn.builder()
-                .dateTime(LocalDateTime.now())
+                .dateTimeIn(LocalDateTime.now())
                 .direction(clockInRequestDTO.getDirection())
                 .employee(employee)
                 .build();
@@ -73,7 +72,7 @@ public class ClockInServiceImpl implements ClockInService {
                     }
 
                     Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                            ci.getEmployee(), ci.getDateTime().toLocalDate());
+                            ci.getEmployee(), ci.getDateTimeIn().toLocalDate());
 
                     if (contractOpt.isEmpty()) return false;
 
@@ -94,9 +93,9 @@ public class ClockInServiceImpl implements ClockInService {
                     return empresaOk && funcaoOk;
                 })
                 .filter(ci -> clockInSearchDTO.getStartedAtDate() == null ||
-                        !ci.getDateTime().isBefore(clockInSearchDTO.getStartedAtDate()))
+                        !ci.getDateTimeIn().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
-                        !ci.getDateTime().isAfter(clockInSearchDTO.getEndAtDate()))
+                        !ci.getDateTimeIn().isAfter(clockInSearchDTO.getEndAtDate()))
                 .filter(ci -> clockInSearchDTO.getDirection() == null ||
                         (ci.getDirection() != null &&
                                 ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
@@ -125,13 +124,17 @@ public class ClockInServiceImpl implements ClockInService {
 
         clockIn.setDirection(clockInRequestDTO.getDirection());
         clockIn.setEmployee(employee);
-        clockIn.setDateTime(LocalDateTime.parse(clockInRequestDTO.getDateTime(),
+        clockIn.setDateTimeIn(LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        clockIn.setDateTimeOut(LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
         ClockIn updatedClockIn = clockInRepository.save(clockIn);
 
         return mapToDTO(updatedClockIn);
     }
+
+
 
     @Override
     public ClockInResponseDTO deleteClockIn(Long id) {
@@ -143,7 +146,7 @@ public class ClockInServiceImpl implements ClockInService {
 
     private ClockInResponseDTO mapToDTO(ClockIn clockIn) {
         return ClockInResponseDTO.builder()
-                .dateTime(clockIn.getDateTime().toString())
+                .dateTimeIn(clockIn.getDateTimeIn().toString())
                 .direction(clockIn.getDirection())
                 .employee(mapToFuncionarioDTO(clockIn.getEmployee()))
                 .build();
@@ -157,7 +160,7 @@ public class ClockInServiceImpl implements ClockInService {
 
         if (employee != null) {
             Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                    employee, clockIn.getDateTime().toLocalDate());
+                    employee, clockIn.getDateTimeIn().toLocalDate());
 
             if (contractOpt.isPresent()) {
                 Contract contract = contractOpt.get();
@@ -181,7 +184,7 @@ public class ClockInServiceImpl implements ClockInService {
                 .company(companyDTO)
                 .roleName(roleName)
                 .direction(clockIn.getDirection())
-                .dateTime(clockIn.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .dateTimeIn(clockIn.getDateTimeIn().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
                 .build();
     }
 
