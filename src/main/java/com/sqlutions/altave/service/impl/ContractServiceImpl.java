@@ -116,4 +116,24 @@ public class ContractServiceImpl implements ContractService {
                 .map(ContractResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public ContractResponseDTO inactivateContract(Long contractId) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("Contrato não encontrado."));
+
+        LocalDate today = LocalDate.now();
+
+        if (!contract.isActive(today)) {
+            throw new IllegalStateException("Este contrato já se encontra inativo.");
+        }
+
+        if (contract.getStartDate().isAfter(today)) {
+            throw new IllegalArgumentException("Não é possível inativar um contrato que ainda não começou.");
+        }
+
+        contract.setEndDate(today);
+
+        return new ContractResponseDTO(contractRepository.save(contract));
+    }
 }
