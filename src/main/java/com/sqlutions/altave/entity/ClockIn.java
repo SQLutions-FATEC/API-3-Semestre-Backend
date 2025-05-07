@@ -16,7 +16,8 @@ public class ClockIn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long clockInId;
-    private LocalDateTime dateTime;
+    private LocalDateTime dateTimeIn;
+    private LocalDateTime dateTimeOut;
     private String direction;
 
     @ManyToOne
