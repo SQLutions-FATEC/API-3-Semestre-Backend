@@ -20,6 +20,8 @@ public class ClockInListDTO {
     private String roleName;
     @JsonProperty("direction")
     private String direction;
-    @JsonProperty("date_time")
-    private String dateTime;
+    @JsonProperty("date_time_in")
+    private String dateTimeIn;
+    @JsonProperty("date_time_out")
+    private String dateTimeOut;
 }
