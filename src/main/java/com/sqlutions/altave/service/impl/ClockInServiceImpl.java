@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -153,41 +154,28 @@ public class ClockInServiceImpl implements ClockInService {
     }
 
     private ClockInListDTO mapToListDTO(ClockIn clockIn) {
-        var employee = clockIn.getEmployee();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        CompanyListDTO companyDTO = null;
-        String roleName = null;
-
-        if (employee != null) {
-            Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                    employee, clockIn.getDateTimeIn().toLocalDate());
-
-            if (contractOpt.isPresent()) {
-                Contract contract = contractOpt.get();
-
-                if (contract.getCompany() != null) {
-                    companyDTO = new CompanyListDTO(
-                            contract.getCompany().getId(),
-                            contract.getCompany().getCompanyName()
-                    );
-                }
-
-                if (contract.getRole() != null) {
-                    roleName = contract.getRole().getName();
-                }
-            }
-        }
+        Contract contract = contractRepository.findById(clockIn.getContract().getContractId())
+                .orElseThrow(() -> new NoSuchElementException("Contract not found"));
 
         return ClockInListDTO.builder()
-                .id(clockIn.getClockInId())
-                .employee(mapToFuncionarioListDTO(employee))
-                .company(companyDTO)
-                .roleName(roleName)
-                .direction(clockIn.getDirection())
-                .dateTimeIn(clockIn.getDateTimeIn().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .employee(EmployeeListDTO.builder()
+                        .idFuncionario(clockIn.getEmployee().getId())
+                        .nome(clockIn.getEmployee().getEmployeeName())
+                        .build())
+                .company(CompanyListDTO.builder()
+                        .id(contract.getCompany().getId())
+                        .companyName(contract.getCompany().getCompanyName())
+                        .build())
+                .roleName(contract.getRole().getName())
+                .direction(clockIn.getDirection().toLowerCase())
+                .dateTimeIn(clockIn.getDateTimeIn().format(formatter))
+                .dateTimeOut(clockIn.getDateTimeOut() != null
+                        ? clockIn.getDateTimeOut().format(formatter)
+                        : null)
                 .build();
     }
-
 
     private EmployeeResponseDTO mapToFuncionarioDTO(Employee employee) {
         return EmployeeResponseDTO.builder()
