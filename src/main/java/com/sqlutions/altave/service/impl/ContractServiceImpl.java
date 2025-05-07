@@ -67,16 +67,37 @@ public class ContractServiceImpl implements ContractService {
         return new ContractResponseDTO(contractRepository.save(contract));
     }
 
+    @Override
     public ContractResponseDTO updateContract(Long contractId, ContractRequestDTO dto) {
-        Contract contract = contractRepository.findById(contractId).orElseThrow();
-        contract.setEmployee(employeeRepository.findById(dto.getEmployeeId()).orElseThrow());
-        contract.setCompany(companyRepository.findById(dto.getCompanyId()).orElseThrow());
-        contract.setRole(roleRepository.findById(dto.getRoleId()).orElseThrow());
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("Contrato não encontrado."));
+
+        var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
+        var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
+        var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
+
+        List<Contract> existingContracts = contractRepository.findAll().stream()
+                .filter(c -> c.getEmployee().getId().equals(employee.getId()))
+                .filter(c -> !c.getContractId().equals(contractId))
+                .toList();
+
+        for (Contract existing : existingContracts) {
+            boolean datesOverlap = !(dto.getEndDate().isBefore(existing.getStartDate()) ||
+                    dto.getStartDate().isAfter(existing.getEndDate()));
+            if (datesOverlap) {
+                throw new IllegalArgumentException("As datas do contrato editado estão em conflito com outro contrato existente.");
+            }
+        }
+
+        contract.setEmployee(employee);
+        contract.setCompany(company);
+        contract.setRole(role);
         contract.setStartDate(dto.getStartDate());
         contract.setEndDate(dto.getEndDate());
 
         return new ContractResponseDTO(contractRepository.save(contract));
     }
+
 
     public void deleteContract(Long contractId) {
         contractRepository.deleteById(contractId);
