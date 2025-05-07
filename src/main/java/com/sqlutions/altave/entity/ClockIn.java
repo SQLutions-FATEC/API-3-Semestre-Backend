@@ -23,5 +23,9 @@ public class ClockIn {
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_id")
+    private Contract contract;
 }
 
