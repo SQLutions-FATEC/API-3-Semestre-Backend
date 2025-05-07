@@ -9,6 +9,7 @@ import com.sqlutions.altave.repository.EmployeeRepository;
 import com.sqlutions.altave.repository.RoleRepository;
 import com.sqlutions.altave.service.ContractService;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,11 +32,35 @@ public class ContractServiceImpl implements ContractService {
         this.roleRepository = roleRepository;
     }
 
+    @Override
     public ContractResponseDTO createContract(ContractRequestDTO dto) {
+        var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
+        var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
+        var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
+
+        LocalDate today = LocalDate.now();
+        var optionalActiveContract = contractRepository.findContractByEmployeeAndDate(employee, today);
+        if (optionalActiveContract.isPresent()) {
+            throw new IllegalArgumentException("O funcionário já possui um contrato ativo.");
+        }
+
+        List<Contract> existingContracts = contractRepository.findAll()
+                .stream()
+                .filter(c -> c.getEmployee().getId().equals(employee.getId()))
+                .toList();
+
+        for (Contract existing : existingContracts) {
+            boolean datesOverlap = !(dto.getEndDate().isBefore(existing.getStartDate()) ||
+                    dto.getStartDate().isAfter(existing.getEndDate()));
+            if (datesOverlap) {
+                throw new IllegalArgumentException("As datas do novo contrato estão em conflito com um contrato já existente.");
+            }
+        }
+
         Contract contract = new Contract();
-        contract.setEmployee(employeeRepository.findById(dto.getEmployeeId()).orElseThrow());
-        contract.setCompany(companyRepository.findById(dto.getCompanyId()).orElseThrow());
-        contract.setRole(roleRepository.findById(dto.getRoleId()).orElseThrow());
+        contract.setEmployee(employee);
+        contract.setCompany(company);
+        contract.setRole(role);
         contract.setStartDate(dto.getStartDate());
         contract.setEndDate(dto.getEndDate());
 
