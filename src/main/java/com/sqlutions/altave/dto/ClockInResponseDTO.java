@@ -15,8 +15,6 @@ public class ClockInResponseDTO {
     private String dateTimeIn;
     @JsonProperty("date_time_out")
     private String dateTimeOut;
-    @JsonProperty("direction")
-    private String direction;
     @JsonProperty("employee")
     private EmployeeResponseDTO employee;
 }

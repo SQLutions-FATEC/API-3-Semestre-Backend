@@ -46,7 +46,6 @@ public class ClockInController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String start_date,
             @RequestParam(required = false) String end_date,
-            @RequestParam(required = false) String direction,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -72,7 +71,6 @@ public class ClockInController {
                 .role(role)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
-                .direction(direction)
                 .build(), page, size);
 
         return ResponseEntity.ok(response);

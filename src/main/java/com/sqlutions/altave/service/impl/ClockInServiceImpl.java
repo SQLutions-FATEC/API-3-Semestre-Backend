@@ -37,7 +37,6 @@ public class ClockInServiceImpl implements ClockInService {
         Employee employee = convertToEntity(employeeDTO);
         ClockIn clockIn = ClockIn.builder()
                 .dateTimeIn(LocalDateTime.now())
-                .direction(clockInRequestDTO.getDirection())
                 .employee(employee)
                 .build();
 
@@ -97,9 +96,6 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTimeIn().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
                         !ci.getDateTimeIn().isAfter(clockInSearchDTO.getEndAtDate()))
-                .filter(ci -> clockInSearchDTO.getDirection() == null ||
-                        (ci.getDirection() != null &&
-                                ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
                 .collect(Collectors.toList());
 
         int total = filtered.size();
@@ -123,7 +119,6 @@ public class ClockInServiceImpl implements ClockInService {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
 
-        clockIn.setDirection(clockInRequestDTO.getDirection());
         clockIn.setEmployee(employee);
         clockIn.setDateTimeIn(LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
@@ -134,7 +129,6 @@ public class ClockInServiceImpl implements ClockInService {
 
         return mapToDTO(updatedClockIn);
     }
-
 
 
     @Override
@@ -148,7 +142,6 @@ public class ClockInServiceImpl implements ClockInService {
     private ClockInResponseDTO mapToDTO(ClockIn clockIn) {
         return ClockInResponseDTO.builder()
                 .dateTimeIn(clockIn.getDateTimeIn().toString())
-                .direction(clockIn.getDirection())
                 .employee(mapToFuncionarioDTO(clockIn.getEmployee()))
                 .build();
     }
@@ -169,7 +162,6 @@ public class ClockInServiceImpl implements ClockInService {
                         .companyName(contract.getCompany().getCompanyName())
                         .build())
                 .roleName(contract.getRole().getName())
-                .direction(clockIn.getDirection().toLowerCase())
                 .dateTimeIn(clockIn.getDateTimeIn().format(formatter))
                 .dateTimeOut(clockIn.getDateTimeOut() != null
                         ? clockIn.getDateTimeOut().format(formatter)

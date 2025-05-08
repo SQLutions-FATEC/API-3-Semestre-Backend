@@ -18,14 +18,9 @@ public class ClockIn {
     private Long clockInId;
     private LocalDateTime dateTimeIn;
     private LocalDateTime dateTimeOut;
-    private String direction;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
-
-    @ManyToOne
-    @JoinColumn(name = "contract_id")
-    private Contract contract;
 }
 
