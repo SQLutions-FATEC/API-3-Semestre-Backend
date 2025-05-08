@@ -34,4 +34,7 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     @JsonIgnore
     private Set<ClockIn> clockIns;
+
+    @Column(nullable = false)
+    private Boolean deleted = false;
 }
