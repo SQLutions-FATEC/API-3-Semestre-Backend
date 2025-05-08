@@ -3,6 +3,7 @@ package com.sqlutions.altave.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,5 +28,15 @@ public class ClockIn {
     @ManyToOne
     @JoinColumn(name = "contract_id")
     private Contract contract;
+
+    @Transient
+    public Double getWorkedHours() {
+        if (dateTimeIn == null || dateTimeOut == null) {
+            return 0.0;
+        }
+        long minutes = Duration.between(dateTimeIn, dateTimeOut).toMinutes();
+        return minutes / 60.0;
+    }
 }
+
 

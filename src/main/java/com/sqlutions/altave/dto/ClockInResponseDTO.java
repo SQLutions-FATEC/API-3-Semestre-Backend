@@ -19,4 +19,7 @@ public class ClockInResponseDTO {
     private String direction;
     @JsonProperty("employee")
     private EmployeeResponseDTO employee;
+    @JsonProperty("worked_hours")
+    private Double workedHours;
 }
+

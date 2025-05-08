@@ -24,4 +24,7 @@ public class ClockInListDTO {
     private String dateTimeIn;
     @JsonProperty("date_time_out")
     private String dateTimeOut;
+    @JsonProperty("worked_hours")
+    private Double workedHours;
 }
+
