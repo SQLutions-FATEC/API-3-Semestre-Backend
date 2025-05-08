@@ -33,16 +33,25 @@ public class ClockInServiceImpl implements ClockInService {
 
     @Override
     public ClockInResponseDTO createClockIn(ClockInRequestDTO clockInRequestDTO) {
+        LocalDateTime dateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime dateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+        if (dateTimeOut.isBefore(dateTimeIn)) {
+            throw new IllegalArgumentException("DateTimeOut cannot be before DateTimeIn");
+        }
+
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
+
         ClockIn clockIn = ClockIn.builder()
-                .dateTimeIn(LocalDateTime.now())
-                .direction(clockInRequestDTO.getDirection())
+                .dateTimeIn(dateTimeIn)
+                .dateTimeOut(dateTimeOut)
                 .employee(employee)
                 .build();
 
         ClockIn savedClockIn = clockInRepository.save(clockIn);
-
         return mapToDTO(savedClockIn);
     }
 
@@ -100,6 +109,11 @@ public class ClockInServiceImpl implements ClockInService {
                 .filter(ci -> clockInSearchDTO.getDirection() == null ||
                         (ci.getDirection() != null &&
                                 ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
+                // Adicione estes novos filtros para horas trabalhadas
+                .filter(ci -> clockInSearchDTO.getMinHours() == null ||
+                        (ci.getWorkedHours() != null && ci.getWorkedHours() >= clockInSearchDTO.getMinHours()))
+                .filter(ci -> clockInSearchDTO.getMaxHours() == null ||
+                        (ci.getWorkedHours() != null && ci.getWorkedHours() <= clockInSearchDTO.getMaxHours()))
                 .collect(Collectors.toList());
 
         int total = filtered.size();
@@ -123,7 +137,6 @@ public class ClockInServiceImpl implements ClockInService {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
 
-        clockIn.setDirection(clockInRequestDTO.getDirection());
         clockIn.setEmployee(employee);
         clockIn.setDateTimeIn(LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
@@ -148,8 +161,9 @@ public class ClockInServiceImpl implements ClockInService {
     private ClockInResponseDTO mapToDTO(ClockIn clockIn) {
         return ClockInResponseDTO.builder()
                 .dateTimeIn(clockIn.getDateTimeIn().toString())
-                .direction(clockIn.getDirection())
+                .dateTimeOut(clockIn.getDateTimeOut() != null ? clockIn.getDateTimeOut().toString() : null)
                 .employee(mapToFuncionarioDTO(clockIn.getEmployee()))
+                .workedHours(clockIn.getWorkedHours())
                 .build();
     }
 
@@ -169,11 +183,11 @@ public class ClockInServiceImpl implements ClockInService {
                         .companyName(contract.getCompany().getCompanyName())
                         .build())
                 .roleName(contract.getRole().getName())
-                .direction(clockIn.getDirection().toLowerCase())
                 .dateTimeIn(clockIn.getDateTimeIn().format(formatter))
                 .dateTimeOut(clockIn.getDateTimeOut() != null
                         ? clockIn.getDateTimeOut().format(formatter)
                         : null)
+                .workedHours(clockIn.getWorkedHours())
                 .build();
     }
 
