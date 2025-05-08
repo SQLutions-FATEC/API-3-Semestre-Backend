@@ -141,20 +141,6 @@ public class ClockInServiceImpl implements ClockInService {
         return mapToDTO(clockIn);
     }
 
-    @Override
-    public ClockInResponseDTO updateClockInDatetime(Long id, ClockInTimeUpdateDTO updateDTO) {
-        ClockIn clockIn = clockInRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Registro de ponto não encontrado"));
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        clockIn.setDateTime(LocalDateTime.parse(updateDTO.getDateTime(), formatter));
-
-        ClockIn updatedClockIn = clockInRepository.save(clockIn);
-        return mapToDTO(updatedClockIn);
-    }
-
-
-
     private ClockInResponseDTO mapToDTO(ClockIn clockIn) {
         return ClockInResponseDTO.builder()
                 .dateTime(clockIn.getDateTime().toString())
@@ -178,7 +164,7 @@ public class ClockInServiceImpl implements ClockInService {
 
                 if (contract.getCompany() != null) {
                     companyDTO = new CompanyListDTO(
-                            contract.getCompany().getCompanyId(),
+                            contract.getCompany().getId(),
                             contract.getCompany().getCompanyName()
                     );
                 }
@@ -202,7 +188,7 @@ public class ClockInServiceImpl implements ClockInService {
 
     private EmployeeResponseDTO mapToFuncionarioDTO(Employee employee) {
         return EmployeeResponseDTO.builder()
-                .idFuncionario(employee.getEmployeeId())
+                .idFuncionario(employee.getId())
                 .nome(employee.getEmployeeName())
                 .tipoSanguineo(employee.getBloodType())
                 .sexo(employee.getSex())
@@ -212,14 +198,17 @@ public class ClockInServiceImpl implements ClockInService {
 
     private EmployeeListDTO mapToFuncionarioListDTO(Employee employee) {
         return EmployeeListDTO.builder()
-                .idFuncionario(employee.getEmployeeId())
+                .idFuncionario(employee.getId())
+                .registerNumber(employee.getRegisterNumber())
                 .nome(employee.getEmployeeName())
                 .build();
     }
 
     private Employee convertToEntity(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
+        employee.setId(employeeDTO.getId());
         employee.setEmployeeName(employeeDTO.getEmployeeName());
+        employee.setRegisterNumber(employeeDTO.getRegisterNumber());
         employee.setBirthDate(employeeDTO.getBirthDate());
         employee.setSex(employeeDTO.getSex());
         employee.setBloodType(employeeDTO.getBloodType());

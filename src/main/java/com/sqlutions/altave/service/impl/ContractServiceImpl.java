@@ -59,14 +59,14 @@ public class ContractServiceImpl implements ContractService {
 
     public List<ContractResponseDTO> getContractsByEmployee(Long employeeId) {
         return contractRepository.findAll().stream()
-                .filter(c -> c.getEmployee().getEmployeeId().equals(employeeId))
+                .filter(c -> c.getEmployee().getId().equals(employeeId))
                 .map(ContractResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
     public List<ContractResponseDTO> getContractsByCompany(Long companyId) {
         return contractRepository.findAll().stream()
-                .filter(c -> c.getCompany().getCompanyId().equals(companyId))
+                .filter(c -> c.getCompany().getId().equals(companyId))
                 .map(ContractResponseDTO::new)
                 .collect(Collectors.toList());
     }

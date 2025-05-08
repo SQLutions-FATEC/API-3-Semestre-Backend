@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = "employee")
+@EqualsAndHashCode(exclude = "employee")
 public class ClockIn {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

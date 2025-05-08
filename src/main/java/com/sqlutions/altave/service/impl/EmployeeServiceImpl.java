@@ -71,8 +71,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeDTO convertToDTO(Employee employee) {
         return new EmployeeDTO(
-                employee.getEmployeeId(),
+                employee.getId(),
                 employee.getEmployeeName(),
+                employee.getRegisterNumber(),
                 employee.getBirthDate(),
                 employee.getSex(),
                 employee.getBloodType()
@@ -82,6 +83,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private Employee convertToEntity(EmployeeDTO employeeDTO) {
         Employee employee = new Employee();
         employee.setEmployeeName(employeeDTO.getEmployeeName());
+        employee.setRegisterNumber(employeeDTO.getRegisterNumber());
         employee.setBirthDate(employeeDTO.getBirthDate());
         employee.setSex(employeeDTO.getSex());
         employee.setBloodType(employeeDTO.getBloodType());
