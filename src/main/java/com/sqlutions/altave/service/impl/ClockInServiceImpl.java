@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.Optional;
 
@@ -33,16 +33,25 @@ public class ClockInServiceImpl implements ClockInService {
 
     @Override
     public ClockInResponseDTO createClockIn(ClockInRequestDTO clockInRequestDTO) {
+        LocalDateTime dateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime dateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+        if (dateTimeOut.isBefore(dateTimeIn)) {
+            throw new IllegalArgumentException("DateTimeOut cannot be before DateTimeIn");
+        }
+
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
+
         ClockIn clockIn = ClockIn.builder()
-                .dateTime(LocalDateTime.now())
-                .direction(clockInRequestDTO.getDirection())
+                .dateTimeIn(dateTimeIn)
+                .dateTimeOut(dateTimeOut)
                 .employee(employee)
                 .build();
 
         ClockIn savedClockIn = clockInRepository.save(clockIn);
-
         return mapToDTO(savedClockIn);
     }
 
@@ -73,7 +82,7 @@ public class ClockInServiceImpl implements ClockInService {
                     }
 
                     Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                            ci.getEmployee(), ci.getDateTime().toLocalDate());
+                            ci.getEmployee(), ci.getDateTimeIn().toLocalDate());
 
                     if (contractOpt.isEmpty()) return false;
 
@@ -94,12 +103,17 @@ public class ClockInServiceImpl implements ClockInService {
                     return empresaOk && funcaoOk;
                 })
                 .filter(ci -> clockInSearchDTO.getStartedAtDate() == null ||
-                        !ci.getDateTime().isBefore(clockInSearchDTO.getStartedAtDate()))
+                        !ci.getDateTimeIn().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
-                        !ci.getDateTime().isAfter(clockInSearchDTO.getEndAtDate()))
+                        !ci.getDateTimeIn().isAfter(clockInSearchDTO.getEndAtDate()))
                 .filter(ci -> clockInSearchDTO.getDirection() == null ||
                         (ci.getDirection() != null &&
                                 ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
+                // Adicione estes novos filtros para horas trabalhadas
+                .filter(ci -> clockInSearchDTO.getMinHours() == null ||
+                        (ci.getWorkedHours() != null && ci.getWorkedHours() >= clockInSearchDTO.getMinHours()))
+                .filter(ci -> clockInSearchDTO.getMaxHours() == null ||
+                        (ci.getWorkedHours() != null && ci.getWorkedHours() <= clockInSearchDTO.getMaxHours()))
                 .collect(Collectors.toList());
 
         int total = filtered.size();
@@ -123,15 +137,18 @@ public class ClockInServiceImpl implements ClockInService {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
 
-        clockIn.setDirection(clockInRequestDTO.getDirection());
         clockIn.setEmployee(employee);
-        clockIn.setDateTime(LocalDateTime.parse(clockInRequestDTO.getDateTime(),
+        clockIn.setDateTimeIn(LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        clockIn.setDateTimeOut(LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 
         ClockIn updatedClockIn = clockInRepository.save(clockIn);
 
         return mapToDTO(updatedClockIn);
     }
+
+
 
     @Override
     public ClockInResponseDTO deleteClockIn(Long id) {
@@ -143,48 +160,36 @@ public class ClockInServiceImpl implements ClockInService {
 
     private ClockInResponseDTO mapToDTO(ClockIn clockIn) {
         return ClockInResponseDTO.builder()
-                .dateTime(clockIn.getDateTime().toString())
-                .direction(clockIn.getDirection())
+                .dateTimeIn(clockIn.getDateTimeIn().toString())
+                .dateTimeOut(clockIn.getDateTimeOut() != null ? clockIn.getDateTimeOut().toString() : null)
                 .employee(mapToFuncionarioDTO(clockIn.getEmployee()))
+                .workedHours(clockIn.getWorkedHours())
                 .build();
     }
 
     private ClockInListDTO mapToListDTO(ClockIn clockIn) {
-        var employee = clockIn.getEmployee();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        CompanyListDTO companyDTO = null;
-        String roleName = null;
-
-        if (employee != null) {
-            Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                    employee, clockIn.getDateTime().toLocalDate());
-
-            if (contractOpt.isPresent()) {
-                Contract contract = contractOpt.get();
-
-                if (contract.getCompany() != null) {
-                    companyDTO = new CompanyListDTO(
-                            contract.getCompany().getId(),
-                            contract.getCompany().getCompanyName()
-                    );
-                }
-
-                if (contract.getRole() != null) {
-                    roleName = contract.getRole().getName();
-                }
-            }
-        }
+        Contract contract = contractRepository.findById(clockIn.getContract().getContractId())
+                .orElseThrow(() -> new NoSuchElementException("Contract not found"));
 
         return ClockInListDTO.builder()
-                .id(clockIn.getClockInId())
-                .employee(mapToFuncionarioListDTO(employee))
-                .company(companyDTO)
-                .roleName(roleName)
-                .direction(clockIn.getDirection())
-                .dateTime(clockIn.getDateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")))
+                .employee(EmployeeListDTO.builder()
+                        .idFuncionario(clockIn.getEmployee().getId())
+                        .nome(clockIn.getEmployee().getEmployeeName())
+                        .build())
+                .company(CompanyListDTO.builder()
+                        .id(contract.getCompany().getId())
+                        .companyName(contract.getCompany().getCompanyName())
+                        .build())
+                .roleName(contract.getRole().getName())
+                .dateTimeIn(clockIn.getDateTimeIn().format(formatter))
+                .dateTimeOut(clockIn.getDateTimeOut() != null
+                        ? clockIn.getDateTimeOut().format(formatter)
+                        : null)
+                .workedHours(clockIn.getWorkedHours())
                 .build();
     }
-
 
     private EmployeeResponseDTO mapToFuncionarioDTO(Employee employee) {
         return EmployeeResponseDTO.builder()

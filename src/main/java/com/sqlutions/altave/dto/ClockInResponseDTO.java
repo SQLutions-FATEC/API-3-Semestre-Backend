@@ -11,10 +11,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ClockInResponseDTO {
-    @JsonProperty("date_time")
-    private String dateTime;
-    @JsonProperty("direction")
-    private String direction;
+    @JsonProperty("date_time_in")
+    private String dateTimeIn;
+    @JsonProperty("date_time_out")
+    private String dateTimeOut;
     @JsonProperty("employee")
     private EmployeeResponseDTO employee;
+    @JsonProperty("worked_hours")
+    private Double workedHours;
 }
+
