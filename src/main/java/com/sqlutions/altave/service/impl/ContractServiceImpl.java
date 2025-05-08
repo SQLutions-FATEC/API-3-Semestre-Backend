@@ -34,6 +34,8 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public ContractResponseDTO createContract(ContractRequestDTO dto) {
+        validateContractDates(dto.getStartDate(), dto.getEndDate());
+
         var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
@@ -69,6 +71,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public ContractResponseDTO updateContract(Long contractId, ContractRequestDTO dto) {
+        validateContractDates(dto.getStartDate(), dto.getEndDate());
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("Contrato não encontrado."));
 
@@ -135,5 +138,11 @@ public class ContractServiceImpl implements ContractService {
         contract.setEndDate(today);
 
         return new ContractResponseDTO(contractRepository.save(contract));
+    }
+
+    private void validateContractDates(LocalDate startDate, LocalDate endDate) {
+        if (endDate != null && startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("A data de início não pode ser posterior à data de término.");
+        }
     }
 }
