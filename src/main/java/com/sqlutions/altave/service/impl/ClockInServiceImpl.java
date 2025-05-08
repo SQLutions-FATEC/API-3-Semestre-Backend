@@ -96,7 +96,7 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTimeIn().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
                         !ci.getDateTimeIn().isAfter(clockInSearchDTO.getEndAtDate()))
-                .collect(Collectors.toList());
+                .toList();
 
         int total = filtered.size();
         int start = Math.min(page * size, total);
@@ -108,7 +108,7 @@ public class ClockInServiceImpl implements ClockInService {
 
         return ClockInResponseWithTotalDTO.builder()
                 .items(paged)
-                .total((long) total)
+                .total(total)
                 .build();
     }
 
@@ -149,12 +149,14 @@ public class ClockInServiceImpl implements ClockInService {
     private ClockInListDTO mapToListDTO(ClockIn clockIn) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-        Contract contract = contractRepository.findById(clockIn.getContract().getContractId())
+        Contract contract = contractRepository.findContractByEmployeeAndDate(clockIn.getEmployee(), clockIn.getDateTimeIn().toLocalDate())
                 .orElseThrow(() -> new NoSuchElementException("Contract not found"));
 
         return ClockInListDTO.builder()
+                .id(clockIn.getClockInId())
                 .employee(EmployeeListDTO.builder()
                         .idFuncionario(clockIn.getEmployee().getId())
+                        .registerNumber(clockIn.getEmployee().getRegisterNumber())
                         .nome(clockIn.getEmployee().getEmployeeName())
                         .build())
                 .company(CompanyListDTO.builder()
@@ -176,14 +178,6 @@ public class ClockInServiceImpl implements ClockInService {
                 .tipoSanguineo(employee.getBloodType())
                 .sexo(employee.getSex())
                 .dataNascimento(employee.getBirthDate())
-                .build();
-    }
-
-    private EmployeeListDTO mapToFuncionarioListDTO(Employee employee) {
-        return EmployeeListDTO.builder()
-                .idFuncionario(employee.getId())
-                .registerNumber(employee.getRegisterNumber())
-                .nome(employee.getEmployeeName())
                 .build();
     }
 
