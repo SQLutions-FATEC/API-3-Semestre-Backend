@@ -11,4 +11,5 @@ public interface ContractService {
     void deleteContract(Long id);
     List<ContractResponseDTO> getContractsByEmployee(Long employeeId);
     List<ContractResponseDTO> getContractsByCompany(Long companyId);
+    ContractResponseDTO inactivateContract(Long contractId);
 }
