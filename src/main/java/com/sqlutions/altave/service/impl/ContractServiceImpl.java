@@ -54,7 +54,7 @@ public class ContractServiceImpl implements ContractService {
         for (Contract existing : existingContracts) {
             boolean datesOverlap = !(dto.getEndDate().isBefore(existing.getStartDate()) ||
                     dto.getStartDate().isAfter(existing.getEndDate()));
-            if (datesOverlap) {
+            if (datesOverlap && existing.isActive(dto.getStartDate())) {
                 throw new IllegalArgumentException("As datas do novo contrato estão em conflito com um contrato já existente.");
             }
         }
