@@ -3,6 +3,7 @@ package com.sqlutions.altave.service.impl;
 import com.sqlutions.altave.dto.ContractRequestDTO;
 import com.sqlutions.altave.dto.ContractResponseDTO;
 import com.sqlutions.altave.entity.Contract;
+import com.sqlutions.altave.exception.BusinessException;
 import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
 import com.sqlutions.altave.repository.EmployeeRepository;
@@ -41,7 +42,7 @@ public class ContractServiceImpl implements ContractService {
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
         if (contractRepository.findContractByEmployeeAndDate(employee, LocalDate.now()).isPresent()) {
-            throw new IllegalArgumentException("O funcionário já possui um contrato ativo.");
+            throw new BusinessException("O funcionário já possui um contrato ativo.");
         }
 
         List<Contract> overlappingContracts = contractRepository
@@ -49,7 +50,7 @@ public class ContractServiceImpl implements ContractService {
 
         for (Contract existing : overlappingContracts) {
             if (existing.isActive(LocalDate.now())) {
-                throw new IllegalArgumentException("As datas do novo contrato estão em conflito com um contrato ativo.");
+                throw new BusinessException("As datas do novo contrato estão em conflito com um contrato ativo.");
             }
         }
 
@@ -67,7 +68,7 @@ public class ContractServiceImpl implements ContractService {
     public ContractResponseDTO updateContract(Long contractId, ContractRequestDTO dto) {
         validateContractDates(dto.getStartDate(), dto.getEndDate());
         Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException("Contrato não encontrado."));
+                .orElseThrow(() -> new BusinessException("Contrato não encontrado."));
 
         var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
@@ -81,7 +82,7 @@ public class ContractServiceImpl implements ContractService {
 
         for (Contract existing : overlappingContracts) {
             if (existing.isActive(LocalDate.now())) {
-                throw new IllegalArgumentException("As datas do contrato editado estão em conflito com um contrato ativo.");
+                throw new BusinessException("As datas do contrato editado estão em conflito com um contrato ativo.");
             }
         }
 
@@ -116,16 +117,16 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public ContractResponseDTO inactivateContract(Long contractId) {
         Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException("Contrato não encontrado."));
+                .orElseThrow(() -> new BusinessException("Contrato não encontrado."));
 
         LocalDate today = LocalDate.now();
 
         if (!contract.isActive(today)) {
-            throw new IllegalStateException("Este contrato já se encontra inativo.");
+            throw new BusinessException("Este contrato já se encontra inativo.");
         }
 
         if (contract.getStartDate().isAfter(today)) {
-            throw new IllegalArgumentException("Não é possível inativar um contrato que ainda não começou.");
+            throw new BusinessException("Não é possível inativar um contrato que ainda não começou.");
         }
 
         contract.setEndDate(today);
@@ -135,7 +136,7 @@ public class ContractServiceImpl implements ContractService {
 
     private void validateContractDates(LocalDate startDate, LocalDate endDate) {
         if (endDate != null && startDate.isAfter(endDate)) {
-            throw new IllegalArgumentException("A data de início não pode ser posterior à data de término.");
+            throw new BusinessException("A data de início não pode ser posterior à data de término.");
         }
     }
 }
