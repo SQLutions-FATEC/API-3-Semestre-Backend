@@ -48,12 +48,6 @@ public class ContractServiceImpl implements ContractService {
         List<Contract> overlappingContracts = contractRepository
                 .findOverlappingContractsByEmployee(employee, dto.getStartDate(), dto.getEndDate());
 
-        for (Contract existing : overlappingContracts) {
-            if (existing.isActive(LocalDate.now())) {
-                throw new BusinessException("As datas do novo contrato estão em conflito com um contrato ativo.");
-            }
-        }
-
         Contract contract = new Contract();
         contract.setEmployee(employee);
         contract.setCompany(company);
