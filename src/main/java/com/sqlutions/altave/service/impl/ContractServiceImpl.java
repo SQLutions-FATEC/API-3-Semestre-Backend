@@ -40,22 +40,16 @@ public class ContractServiceImpl implements ContractService {
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
-        LocalDate today = LocalDate.now();
-        var optionalActiveContract = contractRepository.findContractByEmployeeAndDate(employee, today);
-        if (optionalActiveContract.isPresent()) {
+        if (contractRepository.findContractByEmployeeAndDate(employee, LocalDate.now()).isPresent()) {
             throw new IllegalArgumentException("O funcionário já possui um contrato ativo.");
         }
 
-        List<Contract> existingContracts = contractRepository.findAll()
-                .stream()
-                .filter(c -> c.getEmployee().getId().equals(employee.getId()))
-                .toList();
+        List<Contract> overlappingContracts = contractRepository
+                .findOverlappingContractsByEmployee(employee, dto.getStartDate(), dto.getEndDate());
 
-        for (Contract existing : existingContracts) {
-            boolean datesOverlap = !(dto.getEndDate().isBefore(existing.getStartDate()) ||
-                    dto.getStartDate().isAfter(existing.getEndDate()));
-            if (datesOverlap && existing.isActive(dto.getStartDate())) {
-                throw new IllegalArgumentException("As datas do novo contrato estão em conflito com um contrato já existente.");
+        for (Contract existing : overlappingContracts) {
+            if (existing.isActive(LocalDate.now())) {
+                throw new IllegalArgumentException("As datas do novo contrato estão em conflito com um contrato ativo.");
             }
         }
 
@@ -79,16 +73,15 @@ public class ContractServiceImpl implements ContractService {
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
-        List<Contract> existingContracts = contractRepository.findAll().stream()
-                .filter(c -> c.getEmployee().getId().equals(employee.getId()))
+        List<Contract> overlappingContracts = contractRepository
+                .findOverlappingContractsByEmployee(employee, dto.getStartDate(), dto.getEndDate())
+                .stream()
                 .filter(c -> !c.getContractId().equals(contractId))
                 .toList();
 
-        for (Contract existing : existingContracts) {
-            boolean datesOverlap = !(dto.getEndDate().isBefore(existing.getStartDate()) ||
-                    dto.getStartDate().isAfter(existing.getEndDate()));
-            if (datesOverlap) {
-                throw new IllegalArgumentException("As datas do contrato editado estão em conflito com outro contrato existente.");
+        for (Contract existing : overlappingContracts) {
+            if (existing.isActive(LocalDate.now())) {
+                throw new IllegalArgumentException("As datas do contrato editado estão em conflito com um contrato ativo.");
             }
         }
 
