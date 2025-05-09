@@ -45,9 +45,6 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException("O funcionário já possui um contrato ativo.");
         }
 
-        List<Contract> overlappingContracts = contractRepository
-                .findOverlappingContractsByEmployee(employee, dto.getStartDate(), dto.getEndDate());
-
         Contract contract = new Contract();
         contract.setEmployee(employee);
         contract.setCompany(company);
