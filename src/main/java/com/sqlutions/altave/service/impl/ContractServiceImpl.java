@@ -68,18 +68,6 @@ public class ContractServiceImpl implements ContractService {
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
-        List<Contract> overlappingContracts = contractRepository
-                .findOverlappingContractsByEmployee(employee, dto.getStartDate(), dto.getEndDate())
-                .stream()
-                .filter(c -> !c.getContractId().equals(contractId))
-                .toList();
-
-        for (Contract existing : overlappingContracts) {
-            if (existing.isActive(LocalDate.now())) {
-                throw new BusinessException("As datas do contrato editado estão em conflito com um contrato ativo.");
-            }
-        }
-
         contract.setEmployee(employee);
         contract.setCompany(company);
         contract.setRole(role);
