@@ -25,4 +25,8 @@ public class ClockInSearchDTO {
     private LocalDateTime endAtDate;
     @JsonProperty("direction")
     private String direction;
+    @JsonProperty("min_hours")
+    private Double minHours;
+    @JsonProperty("max_hours")
+    private Double maxHours;
 }
