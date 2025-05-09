@@ -177,6 +177,7 @@ public class ClockInServiceImpl implements ClockInService {
                 .employee(EmployeeListDTO.builder()
                         .idFuncionario(clockIn.getEmployee().getId())
                         .nome(clockIn.getEmployee().getEmployeeName())
+                        .registerNumber(clockIn.getEmployee().getRegisterNumber())
                         .build())
                 .company(CompanyListDTO.builder()
                         .id(contract.getCompany().getId())
@@ -198,6 +199,7 @@ public class ClockInServiceImpl implements ClockInService {
                 .tipoSanguineo(employee.getBloodType())
                 .sexo(employee.getSex())
                 .dataNascimento(employee.getBirthDate())
+                .registerNumber(employee.getRegisterNumber())
                 .build();
     }
 
