@@ -1,9 +1,9 @@
 -- 1) EMPRESAS
-INSERT INTO company (company_name, trade_name, cnpj)
+INSERT INTO company (company_name, trade_name, cnpj, deleted)
 VALUES
-    ('SQLutions','SQLutions','80066680000185'),
-    ('TechNova','TechNova','57720660000164'),
-    ('EcoDrive','EcoDrive','67506602000196');
+    ('SQLutions','SQLutions','80066680000185', false),
+    ('TechNova','TechNova','57720660000164', false),
+    ('EcoDrive','EcoDrive','67506602000196', false);
 
 -- 2) FUNCIONARIOS
 INSERT INTO employee (name, register_number, birth_date, sex, blood_type)
