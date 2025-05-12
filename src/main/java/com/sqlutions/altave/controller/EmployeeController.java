@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 @RestController
@@ -44,10 +45,12 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @Operation(summary = "Endpoint para buscar todos os funcionários")
-    public ResponseEntity<List<EmployeeDTO>> listarFuncionarios() {
-        List<EmployeeDTO> employees = employeeService.getAllEmployees();
+    @Operation(summary = "Endpoint para buscar funcionários com paginação")
+    public ResponseEntity<Page<EmployeeDTO>> getEmployees(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<EmployeeDTO> employees = employeeService.getEmployees(page, size);
         return ResponseEntity.ok(employees);
     }
 }
-
