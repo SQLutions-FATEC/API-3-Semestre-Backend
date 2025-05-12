@@ -28,8 +28,9 @@ public class CompanyServiceImpl implements CompanyService {
     private ClockInRepository clockInRepository;
 
     @Override
-    public List<CompanyDTO> getAllCompanies() {
-        return companyRepository.findAll().stream()
+    public List<CompanyDTO> getCompanies(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return companyRepository.findAll(pageable).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }

@@ -19,9 +19,11 @@ public class CompanyController {
     private CompanyService companyService;
 
     @GetMapping
-    @Operation(summary = "Endpoint para listar todas as empresas")
-    public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
-        List<CompanyDTO> companies = companyService.getAllCompanies();
+    @Operation(summary = "Endpoint para listar empresas com paginação")
+    public ResponseEntity<List<CompanyDTO>> getCompanies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        List<CompanyDTO> companies = companyService.getCompanies(page, size);
         return ResponseEntity.ok(companies);
     }
 
