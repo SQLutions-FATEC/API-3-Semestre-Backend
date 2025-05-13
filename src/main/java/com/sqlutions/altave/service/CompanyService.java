@@ -1,10 +1,10 @@
 package com.sqlutions.altave.service;
 
 import com.sqlutions.altave.dto.CompanyDTO;
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface CompanyService {
-    List<CompanyDTO> getCompanies(int page, int size);
+    Page<CompanyDTO> getCompanies(int page, int size);
     CompanyDTO getCompanyById(Long id);
     CompanyDTO createCompany(CompanyDTO companyDTO);
     CompanyDTO updateCompany(Long id, CompanyDTO companyDTO);

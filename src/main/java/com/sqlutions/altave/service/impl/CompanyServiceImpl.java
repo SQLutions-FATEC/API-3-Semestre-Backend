@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,11 +31,10 @@ public class CompanyServiceImpl implements CompanyService {
     private ClockInRepository clockInRepository;
 
     @Override
-    public List<CompanyDTO> getCompanies(int page, int size) {
+    public Page<CompanyDTO> getCompanies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return companyRepository.findAll(pageable).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return companyRepository.findAll(pageable)
+                .map(this::convertToDTO);
     }
 
     @Override
