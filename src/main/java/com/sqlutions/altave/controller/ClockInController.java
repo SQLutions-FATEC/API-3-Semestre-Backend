@@ -26,7 +26,7 @@ public class ClockInController {
 
     @PostMapping
     @Operation(summary = "Endpoint para criar uma nova movimentação")
-    public ResponseEntity<ClockInResponseDTO> createMovimentacao(@Valid @RequestBody ClockInRequestDTO clockInRequestDTO) {
+    public ResponseEntity<ClockInResponseDTO> createClockIn(@Valid @RequestBody ClockInRequestDTO clockInRequestDTO) {
         if (clockInRequestDTO.getDateTimeIn() == null || clockInRequestDTO.getDateTimeOut() == null) {
             throw new IllegalArgumentException("Both dateTimeIn and dateTimeOut are required");
         }
@@ -37,14 +37,14 @@ public class ClockInController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Endpoint para buscar uma movimentação pelo ID")
-    public ResponseEntity<ClockInResponseDTO> getMovimentacaoById(@PathVariable Long id) {
-        ClockInResponseDTO movimentacao = clockInService.getClockInById(id);
-        return ResponseEntity.ok(movimentacao);
+    public ResponseEntity<ClockInResponseDTO> getClockInById(@PathVariable Long id) {
+        ClockInResponseDTO clockIn = clockInService.getClockInById(id);
+        return ResponseEntity.ok(clockIn);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<?> searchMovimentacoes(
+    public ResponseEntity<?> searchClockIns(
             @RequestParam(required = false) String employee,
             @RequestParam(required = false) String company,
             @RequestParam(required = false) String role,
@@ -88,14 +88,14 @@ public class ClockInController {
 
     @PutMapping("/{id}")
     @Operation(summary = "Endpoint para atualizar uma movimentação")
-    public ResponseEntity<ClockInResponseDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody ClockInRequestDTO clockInRequestDTO) throws ParseException {
+    public ResponseEntity<ClockInResponseDTO> updateClockIn(@PathVariable Long id, @Valid @RequestBody ClockInRequestDTO clockInRequestDTO) throws ParseException {
         ClockInResponseDTO updatedMovimentacao = clockInService.updateClockIn(id, clockInRequestDTO);
         return ResponseEntity.ok(updatedMovimentacao);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Endpoint para excluir uma movimentação")
-    public ResponseEntity<ClockInResponseDTO> deleteMovimentacao(@PathVariable Long id) {
+    public ResponseEntity<ClockInResponseDTO> deleteClockIn(@PathVariable Long id) {
         ClockInResponseDTO deletedMovimentacao = clockInService.deleteClockIn(id);
         return ResponseEntity.ok(deletedMovimentacao);
     }

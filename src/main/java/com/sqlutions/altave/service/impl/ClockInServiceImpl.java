@@ -4,6 +4,7 @@ import com.sqlutions.altave.dto.*;
 import com.sqlutions.altave.entity.ClockIn;
 import com.sqlutions.altave.entity.Employee;
 import com.sqlutions.altave.entity.Contract;
+import com.sqlutions.altave.exception.ClockInException;
 import com.sqlutions.altave.repository.ClockInRepository;
 import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.service.EmployeeService;
@@ -38,8 +39,8 @@ public class ClockInServiceImpl implements ClockInService {
         LocalDateTime dateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
-        if (dateTimeOut.isBefore(dateTimeIn)) {
-            throw new IllegalArgumentException("DateTimeOut cannot be before DateTimeIn");
+        if (dateTimeIn.isAfter(dateTimeOut)) {
+            throw new ClockInException("Data de entrada não pode ser posterior à data de saída");
         }
 
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
@@ -68,7 +69,7 @@ public class ClockInServiceImpl implements ClockInService {
             page = page - 1;
         }
 
-        List<ClockIn> allClockIns = clockInRepository.findAll();
+        List<ClockIn> allClockIns = clockInRepository.findAllByOrderByDateTimeInDesc();
 
         List<ClockIn> filtered = allClockIns.stream()
                 .filter(ci -> clockInSearchDTO.getEmployee() == null ||
@@ -109,12 +110,12 @@ public class ClockInServiceImpl implements ClockInService {
                 .filter(ci -> clockInSearchDTO.getDirection() == null ||
                         (ci.getDirection() != null &&
                                 ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
-                // Adicione estes novos filtros para horas trabalhadas
+
                 .filter(ci -> clockInSearchDTO.getMinHours() == null ||
                         (ci.getWorkedHours() != null && ci.getWorkedHours() >= clockInSearchDTO.getMinHours()))
                 .filter(ci -> clockInSearchDTO.getMaxHours() == null ||
                         (ci.getWorkedHours() != null && ci.getWorkedHours() <= clockInSearchDTO.getMaxHours()))
-                .collect(Collectors.toList());
+                .toList();
 
         int total = filtered.size();
         int start = Math.min(page * size, total);
@@ -126,7 +127,7 @@ public class ClockInServiceImpl implements ClockInService {
 
         return ClockInResponseWithTotalDTO.builder()
                 .items(paged)
-                .total((long) total)
+                .total(total)
                 .build();
     }
 
@@ -137,18 +138,22 @@ public class ClockInServiceImpl implements ClockInService {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(clockInRequestDTO.getEmployee());
         Employee employee = convertToEntity(employeeDTO);
 
+        LocalDateTime newDateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        LocalDateTime newDateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+        if (newDateTimeIn.isAfter(newDateTimeOut)) {
+            throw new ClockInException("Data de entrada não pode ser posterior à data de saída");
+        }
+
         clockIn.setEmployee(employee);
-        clockIn.setDateTimeIn(LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-        clockIn.setDateTimeOut(LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+        clockIn.setDateTimeIn(newDateTimeIn);
+        clockIn.setDateTimeOut(newDateTimeOut);
 
         ClockIn updatedClockIn = clockInRepository.save(clockIn);
-
         return mapToDTO(updatedClockIn);
     }
-
-
 
     @Override
     public ClockInResponseDTO deleteClockIn(Long id) {
@@ -174,6 +179,7 @@ public class ClockInServiceImpl implements ClockInService {
                 .orElseThrow(() -> new NoSuchElementException("Contract not found"));
 
         return ClockInListDTO.builder()
+                .id(clockIn.getClockInId())
                 .employee(EmployeeListDTO.builder()
                         .idFuncionario(clockIn.getEmployee().getId())
                         .nome(clockIn.getEmployee().getEmployeeName())
@@ -200,14 +206,6 @@ public class ClockInServiceImpl implements ClockInService {
                 .sexo(employee.getSex())
                 .dataNascimento(employee.getBirthDate())
                 .registerNumber(employee.getRegisterNumber())
-                .build();
-    }
-
-    private EmployeeListDTO mapToFuncionarioListDTO(Employee employee) {
-        return EmployeeListDTO.builder()
-                .idFuncionario(employee.getId())
-                .registerNumber(employee.getRegisterNumber())
-                .nome(employee.getEmployeeName())
                 .build();
     }
 
