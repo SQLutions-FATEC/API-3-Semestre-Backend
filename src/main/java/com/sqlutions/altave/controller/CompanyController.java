@@ -29,7 +29,6 @@ public class CompanyController {
             List<CompanyDTO> companies = companyService.getAllCompanies();
             return ResponseEntity.ok(companies);
         }
-
         Page<CompanyDTO> pagedCompanies = companyService.getCompanies(page, size);
         return ResponseEntity.ok(pagedCompanies);
     }

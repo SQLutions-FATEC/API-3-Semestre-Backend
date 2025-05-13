@@ -34,10 +34,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<EmployeeDTO> getEmployees(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Employee> employeesPage = employeeRepository.findAll(pageable);
-        return employeesPage.map(this::convertToDTO);
+        return employeeRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     @Override

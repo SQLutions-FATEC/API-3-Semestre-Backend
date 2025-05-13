@@ -45,12 +45,16 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @Operation(summary = "Endpoint para buscar funcionários com paginação")
-    public ResponseEntity<Page<EmployeeDTO>> getEmployees(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Page<EmployeeDTO> employees = employeeService.getEmployees(page, size);
-        return ResponseEntity.ok(employees);
+    @Operation(summary = "Endpoint para listar funcionários com ou sem paginação")
+    public ResponseEntity<?> getEmployees(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        if (page == null || size == null || page < 0 || size <= 0) {
+            List<EmployeeDTO> employees = employeeService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        }
+        Page<EmployeeDTO> pagedEmployees = employeeService.getEmployees(page, size);
+        return ResponseEntity.ok(pagedEmployees);
     }
 }
