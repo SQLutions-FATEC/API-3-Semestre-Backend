@@ -31,10 +31,16 @@ public class CompanyServiceImpl implements CompanyService {
     private ClockInRepository clockInRepository;
 
     @Override
+    public List<CompanyDTO> getAllCompanies() {
+        return companyRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Page<CompanyDTO> getCompanies(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return companyRepository.findAll(pageable)
-                .map(this::convertToDTO);
+        return companyRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     @Override

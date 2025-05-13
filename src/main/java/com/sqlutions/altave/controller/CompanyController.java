@@ -20,12 +20,18 @@ public class CompanyController {
     private CompanyService companyService;
 
     @GetMapping
-    @Operation(summary = "Endpoint para listar empresas com paginação")
-    public ResponseEntity<Page<CompanyDTO>> getCompanies(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Page<CompanyDTO> companies = companyService.getCompanies(page, size);
-        return ResponseEntity.ok(companies);
+    @Operation(summary = "Endpoint para listar empresas com ou sem paginação")
+    public ResponseEntity<?> getCompanies(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        if (page == null || size == null || page < 0 || size <= 0) {
+            List<CompanyDTO> companies = companyService.getAllCompanies();
+            return ResponseEntity.ok(companies);
+        }
+
+        Page<CompanyDTO> pagedCompanies = companyService.getCompanies(page, size);
+        return ResponseEntity.ok(pagedCompanies);
     }
 
     @GetMapping("/{id}")
