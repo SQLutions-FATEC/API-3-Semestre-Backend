@@ -30,9 +30,6 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
         EmployeeDTO employee = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employee);
-        /*        return employeeService.getEmployeeById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());*/
     }
 
     @PutMapping("/{id}")
