@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -19,10 +20,17 @@ public class CompanyController {
     private CompanyService companyService;
 
     @GetMapping
-    @Operation(summary = "Endpoint para listar todas as empresas")
-    public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
-        List<CompanyDTO> companies = companyService.getAllCompanies();
-        return ResponseEntity.ok(companies);
+    @Operation(summary = "Endpoint para listar empresas com ou sem paginação")
+    public ResponseEntity<?> getCompanies(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        if (page == null || size == null || page < 0 || size <= 0) {
+            List<CompanyDTO> companies = companyService.getAllCompanies();
+            return ResponseEntity.ok(companies);
+        }
+        Page<CompanyDTO> pagedCompanies = companyService.getCompanies(page, size);
+        return ResponseEntity.ok(pagedCompanies);
     }
 
     @GetMapping("/{id}")

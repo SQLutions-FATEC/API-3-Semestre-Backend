@@ -11,6 +11,9 @@ import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +35,12 @@ public class CompanyServiceImpl implements CompanyService {
         return companyRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<CompanyDTO> getCompanies(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return companyRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     @Override

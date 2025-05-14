@@ -7,6 +7,9 @@ import com.sqlutions.altave.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.stream.Collectors;
 
@@ -22,17 +25,25 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee savedEmployee = employeeRepository.save(employee);
         return convertToDTO(savedEmployee);
     }
+
     @Override
     public EmployeeDTO getEmployeeById(Long id){
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
         return convertToDTO(employee);
     }
+
     @Override
     public List<EmployeeDTO> getAllEmployees() {
         return employeeRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<EmployeeDTO> getEmployees(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return employeeRepository.findAll(pageable).map(this::convertToDTO);
     }
 
     @Override

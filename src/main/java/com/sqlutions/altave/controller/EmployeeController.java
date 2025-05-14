@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
 import java.util.List;
 
 @RestController
@@ -29,9 +30,6 @@ public class EmployeeController {
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
         EmployeeDTO employee = employeeService.getEmployeeById(id);
         return ResponseEntity.ok(employee);
-        /*        return employeeService.getEmployeeById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());*/
     }
 
     @PutMapping("/{id}")
@@ -44,10 +42,16 @@ public class EmployeeController {
     }
 
     @GetMapping
-    @Operation(summary = "Endpoint para buscar todos os funcionários")
-    public ResponseEntity<List<EmployeeDTO>> listarFuncionarios() {
-        List<EmployeeDTO> employees = employeeService.getAllEmployees();
-        return ResponseEntity.ok(employees);
+    @Operation(summary = "Endpoint para listar funcionários com ou sem paginação")
+    public ResponseEntity<?> getEmployees(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+
+        if (page == null || size == null || page < 0 || size <= 0) {
+            List<EmployeeDTO> employees = employeeService.getAllEmployees();
+            return ResponseEntity.ok(employees);
+        }
+        Page<EmployeeDTO> pagedEmployees = employeeService.getEmployees(page, size);
+        return ResponseEntity.ok(pagedEmployees);
     }
 }
-
