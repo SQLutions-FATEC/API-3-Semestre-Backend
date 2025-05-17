@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AnalyticsSummaryRepository extends JpaRepository<AnalyticsSummary, Long> {
-    // Pode adicionar filtros por período, sexo, etc. se quiser.
 }
