@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/clock_in")
@@ -54,10 +55,10 @@ public class ClockInController {
             @RequestParam(required = false) Double min_hours,
             @RequestParam(required = false) Double max_hours,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false") boolean export
     ) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
@@ -72,7 +73,7 @@ public class ClockInController {
             return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
         }
 
-        ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
+        ClockInSearchDTO filters = ClockInSearchDTO.builder()
                 .employee(employee)
                 .company(company)
                 .role(role)
@@ -81,9 +82,15 @@ public class ClockInController {
                 .direction(direction)
                 .minHours(min_hours)
                 .maxHours(max_hours)
-                .build(), page, size);
+                .build();
 
-        return ResponseEntity.ok(response);
+        if (export) {
+            List<ClockInResponseDTO> result = clockInService.exportClockIns(filters);
+            return ResponseEntity.ok(result);
+        } else {
+            ClockInResponseWithTotalDTO response = clockInService.searchClockIns(filters, page, size);
+            return ResponseEntity.ok(response);
+        }
     }
 
     @PutMapping("/{id}")

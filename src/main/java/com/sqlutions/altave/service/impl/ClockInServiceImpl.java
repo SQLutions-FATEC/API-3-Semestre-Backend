@@ -219,4 +219,56 @@ public class ClockInServiceImpl implements ClockInService {
         employee.setBloodType(employeeDTO.getBloodType());
         return employee;
     }
+
+    @Override
+    public List<ClockInResponseDTO> exportClockIns(ClockInSearchDTO filters) {
+        List<ClockIn> allClockIns = clockInRepository.findAllByOrderByDateTimeInDesc();
+
+        List<ClockIn> filtered = allClockIns.stream()
+                .filter(ci -> filters.getEmployee() == null ||
+                        (ci.getEmployee() != null &&
+                                ci.getEmployee().getEmployeeName() != null &&
+                                ci.getEmployee().getEmployeeName().toLowerCase()
+                                        .contains(filters.getEmployee().toLowerCase())))
+                .filter(ci -> {
+                    if (filters.getCompany() == null && filters.getRole() == null) {
+                        return true;
+                    }
+                    Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
+                            ci.getEmployee(), ci.getDateTimeIn().toLocalDate());
+                    if (contractOpt.isEmpty()) return false;
+                    Contract contract = contractOpt.get();
+
+                    boolean empresaOk = filters.getCompany() == null ||
+                            (contract.getCompany() != null &&
+                                    contract.getCompany().getCompanyName() != null &&
+                                    contract.getCompany().getCompanyName().toLowerCase()
+                                            .contains(filters.getCompany().toLowerCase()));
+
+                    boolean funcaoOk = filters.getRole() == null ||
+                            (contract.getRole() != null &&
+                                    contract.getRole().getName() != null &&
+                                    contract.getRole().getName().toLowerCase()
+                                            .contains(filters.getRole().toLowerCase()));
+
+                    return empresaOk && funcaoOk;
+                })
+                .filter(ci -> filters.getStartedAtDate() == null ||
+                        !ci.getDateTimeIn().isBefore(filters.getStartedAtDate()))
+                .filter(ci -> filters.getEndAtDate() == null ||
+                        !ci.getDateTimeIn().isAfter(filters.getEndAtDate()))
+                .filter(ci -> filters.getDirection() == null ||
+                        (ci.getDirection() != null &&
+                                ci.getDirection().equalsIgnoreCase(filters.getDirection())))
+                .filter(ci -> filters.getMinHours() == null ||
+                        (ci.getWorkedHours() != null && ci.getWorkedHours() >= filters.getMinHours()))
+                .filter(ci -> filters.getMaxHours() == null ||
+                        (ci.getWorkedHours() != null && ci.getWorkedHours() <= filters.getMaxHours()))
+                .toList();
+
+        return filtered.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
 }
