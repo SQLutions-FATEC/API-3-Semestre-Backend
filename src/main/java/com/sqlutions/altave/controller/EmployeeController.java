@@ -1,6 +1,8 @@
 package com.sqlutions.altave.controller;
 
+import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
 import com.sqlutions.altave.dto.EmployeeDTO;
+import com.sqlutions.altave.dto.EmployeeResponseWithTotalDTO;
 import com.sqlutions.altave.service.EmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,7 +53,7 @@ public class EmployeeController {
             List<EmployeeDTO> employees = employeeService.getAllEmployees();
             return ResponseEntity.ok(employees);
         }
-        Page<EmployeeDTO> pagedEmployees = employeeService.getEmployees(page, size);
-        return ResponseEntity.ok(pagedEmployees);
+        EmployeeResponseWithTotalDTO response = employeeService.getEmployees(page, size);
+        return ResponseEntity.ok(response);
     }
 }
