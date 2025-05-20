@@ -7,6 +7,7 @@ import org.hibernate.annotations.Subselect;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Immutable
 @Entity
@@ -25,8 +26,8 @@ public class AnalyticsSummary {
     private String sex;
 
     @Column(name = "date_time_in")
-    private LocalDate dateTimeIn;
+    private LocalDateTime dateTimeIn;
 
     @Column(name = "date_time_out")
-    private LocalDate dateTimeOut;
+    private LocalDateTime dateTimeOut;
 }
