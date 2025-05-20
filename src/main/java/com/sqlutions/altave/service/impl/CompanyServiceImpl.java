@@ -1,6 +1,8 @@
 package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.CompanyDTO;
+import com.sqlutions.altave.dto.CompanyListDTO;
+import com.sqlutions.altave.dto.CompanyResponseDTO;
 import com.sqlutions.altave.entity.ClockIn;
 import com.sqlutions.altave.entity.Company;
 import com.sqlutions.altave.entity.Contract;
@@ -38,10 +40,39 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Page<CompanyDTO> getCompanies(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return companyRepository.findAll(pageable).map(this::convertToDTO);
+    public CompanyResponseDTO getCompanies(CompanyDTO companyDTO, int page, int size) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        List<Company> allCompanies = companyRepository.findAll();
+
+        List<Company> filtered = allCompanies.stream()
+                .filter(company -> companyDTO.getCompanyName() == null ||
+                        (company.getCompanyName() != null &&
+                                company.getCompanyName().toLowerCase().contains(companyDTO.getCompanyName().toLowerCase())))
+                .filter(company -> companyDTO.getCnpj() == null ||
+                        (company.getCnpj() != null &&
+                                company.getCnpj().toLowerCase().contains(companyDTO.getCnpj().toLowerCase())))
+                .filter(company -> companyDTO.getTradeName() == null ||
+                        (company.getTradeName() != null &&
+                                company.getTradeName().toLowerCase().contains(companyDTO.getTradeName().toLowerCase())))
+                .toList();
+
+        int total = filtered.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<CompanyListDTO> paged = filtered.subList(start, end).stream()
+                .map(this::convertToListDTO)
+                .collect(Collectors.toList());
+
+        return CompanyResponseDTO.builder()
+                .items(paged)
+                .total(total)
+                .build();
     }
+
 
     @Override
     public CompanyDTO getCompanyById(Long id) {
@@ -104,5 +135,12 @@ public class CompanyServiceImpl implements CompanyService {
         company.setTradeName(companyDTO.getTradeName());
         company.setCnpj(companyDTO.getCnpj());
         return company;
+    }
+
+    private CompanyListDTO convertToListDTO(Company company) {
+        return CompanyListDTO.builder()
+                .id(company.getId())
+                .companyName(company.getCompanyName())
+                .build();
     }
 }

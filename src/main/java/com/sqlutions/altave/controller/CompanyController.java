@@ -1,6 +1,7 @@
 package com.sqlutions.altave.controller;
 
 import com.sqlutions.altave.dto.CompanyDTO;
+import com.sqlutions.altave.dto.CompanyResponseDTO;
 import com.sqlutions.altave.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,18 +20,19 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
-    @GetMapping
-    @Operation(summary = "Endpoint para listar empresas com ou sem paginação")
-    public ResponseEntity<?> getCompanies(
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+    @Operation(summary = "Buscar empresas com filtros e paginação")
+    @PostMapping("/search")
+    public ResponseEntity<CompanyResponseDTO> searchCompanies(
+            @RequestBody(required = false) CompanyDTO companyDTO,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
 
-        if (page == null || size == null || page < 0 || size <= 0) {
-            List<CompanyDTO> companies = companyService.getAllCompanies();
-            return ResponseEntity.ok(companies);
+        if (companyDTO == null) {
+            companyDTO = new CompanyDTO();
         }
-        Page<CompanyDTO> pagedCompanies = companyService.getCompanies(page, size);
-        return ResponseEntity.ok(pagedCompanies);
+
+        CompanyResponseDTO response = companyService.getCompanies(companyDTO, page, size);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
