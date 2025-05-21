@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class ContractRequestDTO {
-    private Long employeeId;
+    private Long employee_id;
     private Long companyId;
     private Long roleId;
     private LocalDate startDate;

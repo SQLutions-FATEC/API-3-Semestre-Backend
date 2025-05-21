@@ -37,7 +37,7 @@ public class ContractServiceImpl implements ContractService {
     public ContractResponseDTO createContract(ContractRequestDTO dto) {
         validateContractDates(dto.getStartDate(), dto.getEndDate());
 
-        var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
+        var employee = employeeRepository.findById(dto.getEmployee_id()).orElseThrow();
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
@@ -61,7 +61,7 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new BusinessException("Contrato não encontrado."));
 
-        var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
+        var employee = employeeRepository.findById(dto.getEmployee_id()).orElseThrow();
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
