@@ -1,6 +1,7 @@
 package com.sqlutions.altave.service.impl;
 
-import com.sqlutions.altave.dto.EmployeeDTO;
+import com.sqlutions.altave.dto.*;
+import com.sqlutions.altave.entity.ClockIn;
 import com.sqlutions.altave.entity.Employee;
 import com.sqlutions.altave.repository.EmployeeRepository;
 import com.sqlutions.altave.service.EmployeeService;
@@ -41,9 +42,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Page<EmployeeDTO> getEmployees(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return employeeRepository.findAll(pageable).map(this::convertToDTO);
+    public EmployeeResponseWithTotalDTO getEmployees(int page, int size) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        List<Employee> employees = employeeRepository.findAll();
+
+        int total = employees.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<EmployeeDTO> paged = employees.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return EmployeeResponseWithTotalDTO.builder()
+                .items(paged)
+                .total(total)
+                .build();
     }
 
     @Override
