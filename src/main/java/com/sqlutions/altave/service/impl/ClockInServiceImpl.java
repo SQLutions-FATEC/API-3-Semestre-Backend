@@ -221,7 +221,7 @@ public class ClockInServiceImpl implements ClockInService {
     }
 
     @Override
-    public List<ClockInResponseDTO> exportClockIns(ClockInSearchDTO filters) {
+    public List<ClockInListDTO> exportClockIns(ClockInSearchDTO filters) {
         List<ClockIn> allClockIns = clockInRepository.findAllByOrderByDateTimeInDesc();
 
         List<ClockIn> filtered = allClockIns.stream()
@@ -267,7 +267,7 @@ public class ClockInServiceImpl implements ClockInService {
                 .toList();
 
         return filtered.stream()
-                .map(this::mapToDTO)
+                .map(this::mapToListDTO)
                 .collect(Collectors.toList());
     }
 

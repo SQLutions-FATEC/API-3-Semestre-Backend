@@ -1,9 +1,6 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.ClockInRequestDTO;
-import com.sqlutions.altave.dto.ClockInResponseDTO;
-import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
-import com.sqlutions.altave.dto.ClockInSearchDTO;
+import com.sqlutions.altave.dto.*;
 import com.sqlutions.altave.service.ClockInService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -85,7 +82,7 @@ public class ClockInController {
                 .build();
 
         if (export) {
-            List<ClockInResponseDTO> result = clockInService.exportClockIns(filters);
+            List<ClockInListDTO> result = clockInService.exportClockIns(filters);
             return ResponseEntity.ok(result);
         } else {
             ClockInResponseWithTotalDTO response = clockInService.searchClockIns(filters, page, size);
