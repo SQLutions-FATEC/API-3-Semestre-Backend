@@ -21,17 +21,18 @@ public class CompanyController {
     private CompanyService companyService;
 
     @Operation(summary = "Buscar empresas com filtros e paginação")
-    @PostMapping("/search")
-    public ResponseEntity<CompanyResponseDTO> searchCompanies(
-            @RequestBody(required = false) CompanyDTO companyDTO,
+    @GetMapping
+    public ResponseEntity<?> getCompanies(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) boolean all) {
 
-        if (companyDTO == null) {
-            companyDTO = new CompanyDTO();
+        if (all) {
+            List<CompanyDTO> companies = companyService.getAllCompanies();
+            return ResponseEntity.ok(companies);
         }
 
-        CompanyResponseDTO response = companyService.getCompanies(companyDTO, page, size);
+        CompanyResponseDTO response = companyService.getCompanies(page, size);
         return ResponseEntity.ok(response);
     }
 

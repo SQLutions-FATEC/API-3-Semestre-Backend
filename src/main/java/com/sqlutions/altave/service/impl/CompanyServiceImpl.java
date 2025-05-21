@@ -40,31 +40,19 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CompanyResponseDTO getCompanies(CompanyDTO companyDTO, int page, int size) {
+    public CompanyResponseDTO getCompanies(int page, int size) {
         if (page > 0) {
             page = page - 1;
         }
 
-        List<Company> allCompanies = companyRepository.findAll();
+        List<Company> companies = companyRepository.findAll();
 
-        List<Company> filtered = allCompanies.stream()
-                .filter(company -> companyDTO.getCompanyName() == null ||
-                        (company.getCompanyName() != null &&
-                                company.getCompanyName().toLowerCase().contains(companyDTO.getCompanyName().toLowerCase())))
-                .filter(company -> companyDTO.getCnpj() == null ||
-                        (company.getCnpj() != null &&
-                                company.getCnpj().toLowerCase().contains(companyDTO.getCnpj().toLowerCase())))
-                .filter(company -> companyDTO.getTradeName() == null ||
-                        (company.getTradeName() != null &&
-                                company.getTradeName().toLowerCase().contains(companyDTO.getTradeName().toLowerCase())))
-                .toList();
-
-        int total = filtered.size();
+        int total = companies.size();
         int start = Math.min(page * size, total);
         int end = Math.min(start + size, total);
 
-        List<CompanyListDTO> paged = filtered.subList(start, end).stream()
-                .map(this::convertToListDTO)
+        List<CompanyDTO> paged = companies.subList(start, end).stream()
+                .map(this::convertToDTO)
                 .collect(Collectors.toList());
 
         return CompanyResponseDTO.builder()
@@ -72,7 +60,6 @@ public class CompanyServiceImpl implements CompanyService {
                 .total(total)
                 .build();
     }
-
 
     @Override
     public CompanyDTO getCompanyById(Long id) {

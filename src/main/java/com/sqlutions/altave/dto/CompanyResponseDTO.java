@@ -15,7 +15,7 @@ import java.util.List;
 public class CompanyResponseDTO {
 
     @JsonProperty("items")
-    private List<CompanyListDTO> items;
+    private List<CompanyDTO> items;
 
     @JsonProperty("total")
     private int total;
