@@ -43,8 +43,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .companyId(companyId)
                 .companyName(companyRepository.getTradeNameById(companyId))
                 .dailyRegisters(new DailyRegisters(
-                        analyticsRepository.countClockInWithIn(companyId),
-                        analyticsRepository.countClockInWithOut(companyId)
+                        analyticsRepository.countClockInWithIn(companyId, now.minusHours(24)),
+                        analyticsRepository.countClockInWithOut(companyId, now.minusHours(24))
                 ))
                 .hoursWorkedByRole(getHoursWorkedByRole(companyId))
                 .employeeCount(new EmployeeCount(

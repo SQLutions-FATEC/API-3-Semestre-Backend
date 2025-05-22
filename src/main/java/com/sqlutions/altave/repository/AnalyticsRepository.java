@@ -18,25 +18,32 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
     @Query("SELECT COUNT(c) " +
             "FROM ClockIn c " +
             "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
-            "WHERE c.dateTimeIn IS NOT NULL AND (:companyId IS NULL OR ct.company.id = :companyId)")
-    Integer countClockInWithIn(@Param("companyId") Long companyId);
+            "WHERE c.dateTimeIn IS NOT NULL AND (:companyId IS NULL OR ct.company.id = :companyId) " +
+            "AND (c.dateTimeIn < CURRENT_TIMESTAMP AND c.dateTimeIn >= :since) " +
+            "AND c.employee.id = ct.employee.id")
+    Integer countClockInWithIn(@Param("companyId") Long companyId,
+                               @Param("since") LocalDateTime since);
 
     @Query("SELECT COUNT(c) " +
             "FROM ClockIn c " +
-            "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
-            "WHERE c.dateTimeOut IS NOT NULL AND (:companyId IS NULL OR ct.company.id = :companyId)")
-    Integer countClockInWithOut(@Param("companyId") Long companyId);
+            "JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate " +
+            "WHERE c.dateTimeOut IS NOT NULL AND (:companyId IS NULL OR ct.company.id = :companyId) " +
+            "AND (c.dateTimeOut < CURRENT_TIMESTAMP AND c.dateTimeOut >= :since) " +
+            "AND c.employee.id = ct.employee.id")
+    Integer countClockInWithOut(@Param("companyId") Long companyId,
+                                @Param("since") LocalDateTime since);
 
     @Query(value = "SELECT r.name AS role_name, SUM(EXTRACT(EPOCH FROM (c.date_time_out - c.date_time_in))/3600) AS total_hours " +
             "FROM clock_in c " +
             "JOIN contract ct ON c.date_time_in BETWEEN ct.start_date AND ct.end_date " +
             "JOIN role r ON ct.role_id = r.id " +
             "WHERE c.date_time_in IS NOT NULL AND c.date_time_out IS NOT NULL " +
-            "AND (c.date_time_in >= :sinceLastWeek OR c.date_time_out >= :sinceLastWeek) " +
+            "AND (c.date_time_in >= :since AND c.date_time_out >= :since) " +
+            "AND (c.date_time_in < CURRENT_TIMESTAMP AND c.date_time_out < CURRENT_TIMESTAMP) " +
             "AND (:companyId IS NULL OR ct.company_id = :companyId) " +
             "GROUP BY r.id, r.name", nativeQuery = true)
     List<Object[]> getHoursWorkedByRole(@Param("companyId") Long companyId,
-                                        @Param("sinceLastWeek") LocalDate sinceLastWeek);
+                                        @Param("since") LocalDate since);
 
     @Query("SELECT COUNT(e.id) " +
             "FROM Employee e JOIN Contract ct ON e.id = ct.employee.id " +
