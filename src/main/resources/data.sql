@@ -43,6 +43,7 @@ VALUES
     ('Product Owner'),
     ('Analista de Dados');
 
+-- TODO: adjust values to approximate of june 2025
 -- 4) CONTRATOS
 INSERT INTO contract (start_date, end_date, company_id, employee_id, role_id)
 VALUES
@@ -195,4 +196,5 @@ VALUES
 ('2024-08-01 08:20:15', '2024-08-01 12:15:30', 'in', 19, 19),
 ('2024-08-01 13:17:30', '2024-08-01 17:27:45', 'out', 19, 19),
 ('2024-08-01 08:07:35', '2024-08-01 12:04:50', 'in', 20, 20),
+('2024-08-01 08:07:35', NULL, 'in', 20, 20),
 ('2024-08-01 13:06:00', '2024-08-01 17:10:15', 'out', 20, 20);
