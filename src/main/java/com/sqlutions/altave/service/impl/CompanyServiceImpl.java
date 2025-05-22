@@ -120,11 +120,4 @@ public class CompanyServiceImpl implements CompanyService {
         company.setCnpj(companyDTO.getCnpj());
         return company;
     }
-
-    private CompanyListDTO convertToListDTO(Company company) {
-        return CompanyListDTO.builder()
-                .id(company.getId())
-                .companyName(company.getCompanyName())
-                .build();
-    }
 }
