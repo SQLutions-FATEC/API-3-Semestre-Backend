@@ -1,8 +1,12 @@
 package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.analytics.AnalyticsDTO;
+import com.sqlutions.altave.dto.analytics.DailyRegisters;
+import com.sqlutions.altave.dto.analytics.EmployeeCount;
+import com.sqlutions.altave.dto.analytics.EmployeesByPeriod;
 import com.sqlutions.altave.dto.analytics.RoleHours;
 import com.sqlutions.altave.repository.AnalyticsRepository;
+import com.sqlutions.altave.repository.CompanyRepository;
 import com.sqlutions.altave.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +23,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     @Autowired
     private AnalyticsRepository analyticsRepository;
 
+    @Autowired
+    private CompanyRepository companyRepository;
+
+    LocalDateTime now = LocalDateTime.now();
+
     private List<RoleHours> getHoursWorkedByRole(Long companyId) {
-        return analyticsRepository.getHoursWorkedByRole(companyId).stream()
+        return analyticsRepository.getHoursWorkedByRole(companyId, now.minusWeeks(1).toLocalDate()).stream()
                 .map(row -> RoleHours.builder()
                         .roleName((String) row[0])
                         .totalHours(((Number) row[1]).doubleValue())
@@ -30,25 +39,29 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     public AnalyticsDTO getAnalyticsForCompany(Long companyId) {
 
-        AnalyticsDTO dto = new AnalyticsDTO();
-
-        dto.setCompanyId(companyId);
-
-        dto.setClockInWithInCount(analyticsRepository.countClockInWithIn(companyId));
-        dto.setClockInWithOutCount(analyticsRepository.countClockInWithOut(companyId));
-        dto.setHoursWorkedByRole(getHoursWorkedByRole(companyId));
-        dto.setMaleWorkers(analyticsRepository.countMaleWorkers(companyId));
-        dto.setFemaleWorkers(analyticsRepository.countFemaleWorkers(companyId));
-
-        LocalDateTime now = LocalDateTime.now();
-
-        dto.setExpiringContracts(analyticsRepository.getExpiringContracts(companyId, now.plusMonths(2).toLocalDate()));
-        dto.setIncompleteClockIns(analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48)));
-
-        dto.setMidnightToMorning(analyticsRepository.countMidnightToMorning(companyId));
-        dto.setMorningToAfternoon(analyticsRepository.countMorningToAfternoon(companyId));
-        dto.setAfternoonToNight(analyticsRepository.countAfternoonToNight(companyId));
-
-        return dto;
+        return AnalyticsDTO.builder()
+                .companyId(companyId)
+                .companyName(companyRepository.getTradeNameById(companyId))
+                .dailyRegisters(new DailyRegisters(
+                        analyticsRepository.countClockInWithIn(companyId),
+                        analyticsRepository.countClockInWithOut(companyId)
+                ))
+                .hoursWorkedByRole(getHoursWorkedByRole(companyId))
+                .employeeCount(new EmployeeCount(
+                        analyticsRepository.countMaleWorkers(companyId),
+                        analyticsRepository.countFemaleWorkers(companyId)
+                ))
+                .expiringContracts(
+                        analyticsRepository.getExpiringContracts(companyId, now.plusMonths(2).toLocalDate())
+                )
+                .incompleteClockIns(
+                        analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48))
+                )
+                .employeesByPeriod(new EmployeesByPeriod(
+                        analyticsRepository.countMidnightToMorning(companyId),
+                        analyticsRepository.countMorningToAfternoon(companyId),
+                        analyticsRepository.countAfternoonToNight(companyId)
+                ))
+                .build();
     }
 }
