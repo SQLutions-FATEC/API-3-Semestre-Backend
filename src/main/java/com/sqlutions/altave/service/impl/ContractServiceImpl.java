@@ -2,6 +2,7 @@ package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.ContractRequestDTO;
 import com.sqlutions.altave.dto.ContractResponseDTO;
+import com.sqlutions.altave.dto.CreateContractsRequestDTO;
 import com.sqlutions.altave.entity.Contract;
 import com.sqlutions.altave.exception.BusinessException;
 import com.sqlutions.altave.repository.ContractRepository;
@@ -12,6 +13,7 @@ import com.sqlutions.altave.service.ContractService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,37 @@ public class ContractServiceImpl implements ContractService {
 
         return new ContractResponseDTO(contractRepository.save(contract));
     }
+
+    @Override
+    public List<ContractResponseDTO> createContracts(CreateContractsRequestDTO request) {
+        var employee = employeeRepository.findById(request.getEmployee_id())
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+
+        List<ContractResponseDTO> createdContracts = new ArrayList<>();
+
+        for (CreateContractsRequestDTO.SingleContractDTO dto : request.getContracts()) {
+            LocalDate startDate = LocalDate.parse(dto.getDatetime_start().substring(0, 10));
+            LocalDate endDate = LocalDate.parse(dto.getDatetime_end().substring(0, 10));
+
+            validateContractDates(startDate, endDate);
+
+            var company = companyRepository.findById(dto.getCompany_id()).orElseThrow();
+            var role = roleRepository.findById(dto.getRole_id()).orElseThrow();
+
+            Contract contract = new Contract();
+            contract.setEmployee(employee);
+            contract.setCompany(company);
+            contract.setRole(role);
+            contract.setStartDate(startDate);
+            contract.setEndDate(endDate);
+
+            contractRepository.save(contract);
+            createdContracts.add(new ContractResponseDTO(contract));
+        }
+
+        return createdContracts;
+    }
+
 
     @Override
     public ContractResponseDTO updateContract(Long contractId, ContractRequestDTO dto) {
