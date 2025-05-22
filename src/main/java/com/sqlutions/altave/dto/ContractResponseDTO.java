@@ -6,19 +6,19 @@ import lombok.Data;
 
 @Data
 public class ContractResponseDTO {
-    private Long contractId;
-    private Long employee_id;
-    private Long companyId;
-    private Long roleId;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Long id;
+    private String company;
+    private String role;
+    private LocalDate date_start;
+    private LocalDate date_end;
+    private Boolean active;
 
     public ContractResponseDTO(Contract contract) {
-        this.contractId = contract.getContractId();
-        this.employee_id = contract.getEmployee().getId();
-        this.companyId = contract.getCompany().getId();
-        this.roleId = contract.getRole().getId();
-        this.startDate = contract.getStartDate();
-        this.endDate = contract.getEndDate();
+        this.id = contract.getContractId();
+        this.company = contract.getCompany().getCompanyName();
+        this.role = contract.getRole().getName();
+        this.date_start = contract.getStartDate();
+        this.date_end = contract.getEndDate();
+        this.active = contract.isActive(LocalDate.now());
     }
 }
