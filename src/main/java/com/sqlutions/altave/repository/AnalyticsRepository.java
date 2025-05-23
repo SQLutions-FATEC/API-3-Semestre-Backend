@@ -29,7 +29,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
     @Query("""
             SELECT COUNT(c)
                 FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
+                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
             WHERE c.dateTimeOut IS NOT NULL
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND (c.dateTimeOut < CURRENT_TIMESTAMP
@@ -45,7 +45,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                     JOIN contract ct ON c.employee_id = ct.employee_id
                     JOIN role r ON ct.role_id = r.id
             WHERE c.date_time_in IS NOT NULL AND c.date_time_out IS NOT NULL
-                AND c.date_time_in BETWEEN ct.start_date AND ct.end_date
+                AND c.date_time_out BETWEEN ct.start_date AND ct.end_date
                 AND c.date_time_out < CURRENT_TIMESTAMP
                 AND c.date_time_in >= :since
                 AND ct.company_id = :companyId
@@ -95,8 +95,8 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
 
     @Query("""
             SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
-            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 0 AND 7
+                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
+            WHERE (EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 0 AND 6 OR EXTRACT(HOUR FROM c.dateTimeIn) = 23)
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND c.dateTimeIn >= :since
             """)
@@ -104,8 +104,8 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
 
     @Query("""
             SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
-            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 8 AND 15
+                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
+            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 7 AND 14
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND c.dateTimeIn >= :since
             """)
@@ -113,8 +113,8 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
 
     @Query("""
             SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
-            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 16 AND 23
+                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
+            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 15 AND 22
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND c.dateTimeIn >= :since
             """)
