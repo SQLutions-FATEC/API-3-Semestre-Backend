@@ -83,7 +83,8 @@ public class ClockInServiceImpl implements ClockInService {
                     }
 
                     Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                            ci.getEmployee(), ci.getDateTimeIn().toLocalDate());
+                            ci.getEmployee(),
+                            ci.getDateTimeIn() == null ? ci.getDateTimeOut().toLocalDate() : ci.getDateTimeIn().toLocalDate());
 
                     if (contractOpt.isEmpty()) return false;
 
@@ -107,9 +108,6 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTimeIn().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
                         !ci.getDateTimeIn().isAfter(clockInSearchDTO.getEndAtDate()))
-                .filter(ci -> clockInSearchDTO.getDirection() == null ||
-                        (ci.getDirection() != null &&
-                                ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
 
                 .filter(ci -> clockInSearchDTO.getMinHours() == null ||
                         (ci.getWorkedHours() != null && ci.getWorkedHours() >= clockInSearchDTO.getMinHours()))
@@ -259,9 +257,6 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTimeIn().isBefore(filters.getStartedAtDate()))
                 .filter(ci -> filters.getEndAtDate() == null ||
                         !ci.getDateTimeIn().isAfter(filters.getEndAtDate()))
-                .filter(ci -> filters.getDirection() == null ||
-                        (ci.getDirection() != null &&
-                                ci.getDirection().equalsIgnoreCase(filters.getDirection())))
                 .filter(ci -> filters.getMinHours() == null ||
                         (ci.getWorkedHours() != null && ci.getWorkedHours() >= filters.getMinHours()))
                 .filter(ci -> filters.getMaxHours() == null ||
