@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 public class ContractRequestDTO {
-    @JsonProperty("id")
+    @JsonProperty("employee_id")
     private Long employee_id;
 
     @JsonProperty("company_id")
