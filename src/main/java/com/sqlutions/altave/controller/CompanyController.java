@@ -42,6 +42,13 @@ public class CompanyController {
         return ResponseEntity.ok(activeCompanies);
     }
 
+    @GetMapping("/active")
+    @Operation(summary = "Endpoint para listar todas as empresas ativas")
+    public ResponseEntity<List<CompanyDTO>> getAllActiveCompanies() {
+        List<CompanyDTO> activeCompanies = companyService.getAllActiveCompanies();
+        return ResponseEntity.ok(activeCompanies);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Endpoint para buscar empresa pelo ID")
     public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable Long id) {
