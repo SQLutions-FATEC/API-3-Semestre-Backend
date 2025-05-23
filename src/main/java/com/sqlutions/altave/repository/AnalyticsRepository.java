@@ -1,0 +1,99 @@
+package com.sqlutions.altave.repository;
+
+import com.sqlutions.altave.dto.analytics.ExpiringContract;
+import com.sqlutions.altave.dto.analytics.IncompleteClockIn;
+import com.sqlutions.altave.entity.ClockIn;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Repository
+public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
+
+    @Query("SELECT COUNT(c) " +
+            "FROM ClockIn c " +
+            "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
+            "WHERE c.dateTimeIn IS NOT NULL AND (:companyId IS NULL OR ct.company.id = :companyId) " +
+            "AND (c.dateTimeIn < CURRENT_TIMESTAMP AND c.dateTimeIn >= :since) " +
+            "AND c.employee.id = ct.employee.id")
+    Integer countClockInWithIn(@Param("companyId") Long companyId,
+                               @Param("since") LocalDateTime since);
+
+    @Query("SELECT COUNT(c) " +
+            "FROM ClockIn c " +
+            "JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate " +
+            "WHERE c.dateTimeOut IS NOT NULL AND (:companyId IS NULL OR ct.company.id = :companyId) " +
+            "AND (c.dateTimeOut < CURRENT_TIMESTAMP AND c.dateTimeOut >= :since) " +
+            "AND c.employee.id = ct.employee.id")
+    Integer countClockInWithOut(@Param("companyId") Long companyId,
+                                @Param("since") LocalDateTime since);
+
+    @Query(value = "SELECT r.name AS role_name, SUM(EXTRACT(EPOCH FROM (c.date_time_out - c.date_time_in))/3600) AS total_hours " +
+            "FROM clock_in c " +
+            "JOIN contract ct ON c.date_time_in BETWEEN ct.start_date AND ct.end_date " +
+            "JOIN role r ON ct.role_id = r.id " +
+            "WHERE c.date_time_in IS NOT NULL AND c.date_time_out IS NOT NULL " +
+            "AND (c.date_time_in >= :since AND c.date_time_out >= :since) " +
+            "AND (c.date_time_in < CURRENT_TIMESTAMP AND c.date_time_out < CURRENT_TIMESTAMP) " +
+            "AND (:companyId IS NULL OR ct.company_id = :companyId) " +
+            "GROUP BY r.id, r.name", nativeQuery = true)
+    List<Object[]> getHoursWorkedByRole(@Param("companyId") Long companyId,
+                                        @Param("since") LocalDate since);
+
+    @Query("SELECT COUNT(e.id) " +
+            "FROM Employee e JOIN Contract ct ON e.id = ct.employee.id " +
+            "WHERE e.sex = 'M' " +
+            "AND (:companyId IS NULL OR ct.company.id = :companyId) " +
+            "AND CURRENT_DATE BETWEEN ct.startDate AND ct.endDate")
+    Integer countMaleWorkers(@Param("companyId") Long companyId);
+
+    @Query("SELECT COUNT(e.id) " +
+            "FROM Employee e JOIN Contract ct ON e.id = ct.employee.id " +
+            "WHERE e.sex = 'F' " +
+            "AND (:companyId IS NULL OR ct.company.id = :companyId) " +
+            "AND CURRENT_DATE BETWEEN ct.startDate AND ct.endDate")
+    Integer countFemaleWorkers(@Param("companyId") Long companyId);
+
+    @Query("SELECT new com.sqlutions.altave.dto.analytics.ExpiringContract(ct.contractId, e.registerNumber, e.employeeName, ct.company.tradeName, ct.endDate) " +
+            "FROM Contract ct JOIN ct.employee e " +
+            "WHERE (:companyId IS NULL OR ct.company.id = :companyId) AND ct.endDate BETWEEN CURRENT_DATE AND :twoMonthsFromNow " +
+            "ORDER BY ct.endDate ASC")
+    List<ExpiringContract> getExpiringContracts(@Param("companyId") Long companyId,
+                                                @Param("twoMonthsFromNow") LocalDate twoMonthsFromNow);
+
+    @Query("""
+            SELECT new com.sqlutions.altave.dto.analytics.IncompleteClockIn(c.clockInId, e.registerNumber, e.employeeName, ct.role.name, ct.company.tradeName, c.dateTimeIn, c.dateTimeOut)
+                FROM ClockIn c JOIN c.employee e JOIN e.contracts ct
+                            WHERE ((c.dateTimeIn IS NOT NULL AND c.dateTimeOut IS NULL) OR
+                                   (c.dateTimeIn IS NULL AND c.dateTimeOut IS NOT NULL))
+                            AND (c.dateTimeIn BETWEEN ct.startDate AND ct.endDate OR
+                                   c.dateTimeOut BETWEEN ct.startDate AND ct.endDate)
+                            AND (:companyId IS NULL OR ct.company.id = :companyId)
+                            AND (c.dateTimeIn <= :since OR c.dateTimeOut <= :since)
+            """)
+    List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId,
+                                                  @Param("since") LocalDateTime since);
+
+    @Query("SELECT COUNT(DISTINCT c.employee.id) " +
+            "FROM ClockIn c " +
+            "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
+            "WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 0 AND 7 AND (:companyId IS NULL OR ct.company.id = :companyId)")
+    int countMidnightToMorning(@Param("companyId") Long companyId);
+
+    @Query("SELECT COUNT(DISTINCT c.employee.id) " +
+            "FROM ClockIn c " +
+            "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
+            "WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 8 AND 15 AND (:companyId IS NULL OR ct.company.id = :companyId)")
+    int countMorningToAfternoon(@Param("companyId") Long companyId);
+
+    @Query("SELECT COUNT(DISTINCT c.employee.id) " +
+            "FROM ClockIn c " +
+            "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
+            "WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 16 AND 23 AND (:companyId IS NULL OR ct.company.id = :companyId)")
+    int countAfternoonToNight(@Param("companyId") Long companyId);
+}

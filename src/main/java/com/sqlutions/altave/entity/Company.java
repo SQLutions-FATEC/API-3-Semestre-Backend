@@ -15,6 +15,8 @@ public class Company {
     private Long id;
     private String companyName;
     private String tradeName;
+
+    @Column(unique = true)
     private String cnpj;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)

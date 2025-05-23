@@ -35,9 +35,9 @@ public class ClockInServiceImpl implements ClockInService {
     @Override
     public ClockInResponseDTO createClockIn(ClockInRequestDTO clockInRequestDTO) {
         LocalDateTime dateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime dateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         if (dateTimeIn.isAfter(dateTimeOut)) {
             throw new ClockInException("Data de entrada não pode ser posterior à data de saída");
@@ -139,9 +139,9 @@ public class ClockInServiceImpl implements ClockInService {
         Employee employee = convertToEntity(employeeDTO);
 
         LocalDateTime newDateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime newDateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         if (newDateTimeIn.isAfter(newDateTimeOut)) {
             throw new ClockInException("Data de entrada não pode ser posterior à data de saída");
@@ -173,7 +173,7 @@ public class ClockInServiceImpl implements ClockInService {
     }
 
     private ClockInListDTO mapToListDTO(ClockIn clockIn) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         Contract contract = contractRepository.findById(clockIn.getContract().getContractId())
                 .orElseThrow(() -> new NoSuchElementException("Contract not found"));
@@ -190,7 +190,9 @@ public class ClockInServiceImpl implements ClockInService {
                         .companyName(contract.getCompany().getCompanyName())
                         .build())
                 .roleName(contract.getRole().getName())
-                .dateTimeIn(clockIn.getDateTimeIn().format(formatter))
+                .dateTimeIn(clockIn.getDateTimeIn() != null
+                        ? clockIn.getDateTimeIn().format(formatter)
+                        : null)
                 .dateTimeOut(clockIn.getDateTimeOut() != null
                         ? clockIn.getDateTimeOut().format(formatter)
                         : null)
