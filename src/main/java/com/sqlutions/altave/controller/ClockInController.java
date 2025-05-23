@@ -48,7 +48,6 @@ public class ClockInController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String start_date,
             @RequestParam(required = false) String end_date,
-            @RequestParam(required = false) String direction,
             @RequestParam(required = false) Double min_hours,
             @RequestParam(required = false) Double max_hours,
             @RequestParam(defaultValue = "0") int page,
@@ -76,7 +75,6 @@ public class ClockInController {
                 .role(role)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
-                .direction(direction)
                 .minHours(min_hours)
                 .maxHours(max_hours)
                 .build();
