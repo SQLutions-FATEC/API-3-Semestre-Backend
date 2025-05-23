@@ -16,25 +16,25 @@ import java.util.List;
 public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
 
     @Query("""
-                SELECT COUNT(c)
-                    FROM ClockIn c
-                    JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
-                    WHERE c.dateTimeIn IS NOT NULL
-                        AND (:companyId IS NULL OR ct.company.id = :companyId)
-                        AND (c.dateTimeIn < CURRENT_TIMESTAMP AND c.dateTimeIn >= :since)
-                        AND c.employee.id = ct.employee.id
+            SELECT COUNT(c)
+                FROM ClockIn c
+                JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
+            WHERE c.dateTimeIn IS NOT NULL
+                AND (:companyId IS NULL OR ct.company.id = :companyId)
+                AND (c.dateTimeIn < CURRENT_TIMESTAMP AND c.dateTimeIn >= :since)
+                AND c.employee.id = ct.employee.id
             """)
     Integer countClockInWithIn(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
 
     @Query("""
-                SELECT COUNT(c)
-                    FROM ClockIn c
-                    JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
-                    WHERE c.dateTimeOut IS NOT NULL
-                        AND (:companyId IS NULL OR ct.company.id = :companyId)
-                        AND (c.dateTimeOut < CURRENT_TIMESTAMP
-                        AND c.dateTimeOut >= :since)
-                        AND c.employee.id = ct.employee.id
+            SELECT COUNT(c)
+                FROM ClockIn c
+                JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate
+            WHERE c.dateTimeOut IS NOT NULL
+                AND (:companyId IS NULL OR ct.company.id = :companyId)
+                AND (c.dateTimeOut < CURRENT_TIMESTAMP
+                AND c.dateTimeOut >= :since)
+                AND c.employee.id = ct.employee.id
             """)
     Integer countClockInWithOut(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
 
