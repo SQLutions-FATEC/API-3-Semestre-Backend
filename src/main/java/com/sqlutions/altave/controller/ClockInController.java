@@ -58,7 +58,7 @@ public class ClockInController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean export
     ) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
@@ -70,7 +70,7 @@ public class ClockInController {
                 endAtDate = LocalDateTime.parse(end_date, formatter);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm:ss");
         }
 
         ClockInSearchDTO filters = ClockInSearchDTO.builder()

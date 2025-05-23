@@ -59,18 +59,23 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
             "AND CURRENT_DATE BETWEEN ct.startDate AND ct.endDate")
     Integer countFemaleWorkers(@Param("companyId") Long companyId);
 
-    @Query("SELECT new com.sqlutions.altave.dto.analytics.ExpiringContract(ct.contractId, e.employeeName, ct.endDate) " +
+    @Query("SELECT new com.sqlutions.altave.dto.analytics.ExpiringContract(ct.contractId, e.registerNumber, e.employeeName, ct.company.tradeName, ct.endDate) " +
             "FROM Contract ct JOIN ct.employee e " +
             "WHERE (:companyId IS NULL OR ct.company.id = :companyId) AND ct.endDate BETWEEN CURRENT_DATE AND :twoMonthsFromNow " +
             "ORDER BY ct.endDate ASC")
     List<ExpiringContract> getExpiringContracts(@Param("companyId") Long companyId,
                                                 @Param("twoMonthsFromNow") LocalDate twoMonthsFromNow);
 
-    @Query("SELECT new com.sqlutions.altave.dto.analytics.IncompleteClockIn(c.clockInId, e.employeeName, c.dateTimeIn, c.dateTimeOut) " +
-            "FROM ClockIn c JOIN c.employee e " +
-            "JOIN Contract ct ON c.dateTimeIn BETWEEN ct.startDate AND ct.endDate " +
-            "WHERE ((c.dateTimeIn IS NOT NULL AND c.dateTimeOut IS NULL) OR (c.dateTimeIn IS NULL AND c.dateTimeOut IS NOT NULL)) " +
-            "AND (c.dateTimeIn < :since OR c.dateTimeOut < :since) AND ct.company.id = :companyId")
+    @Query("""
+            SELECT new com.sqlutions.altave.dto.analytics.IncompleteClockIn(c.clockInId, e.registerNumber, e.employeeName, ct.company.tradeName, c.dateTimeIn, c.dateTimeOut)
+                FROM ClockIn c JOIN c.employee e JOIN e.contracts ct
+                            WHERE ((c.dateTimeIn IS NOT NULL AND c.dateTimeOut IS NULL) OR
+                                   (c.dateTimeIn IS NULL AND c.dateTimeOut IS NOT NULL))
+                            AND (c.dateTimeIn BETWEEN ct.startDate AND ct.endDate OR
+                                   c.dateTimeOut BETWEEN ct.startDate AND ct.endDate)
+                            AND (:companyId IS NULL OR ct.company.id = :companyId)
+                            AND (c.dateTimeIn <= :since OR c.dateTimeOut <= :since)
+            """)
     List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId,
                                                   @Param("since") LocalDateTime since);
 

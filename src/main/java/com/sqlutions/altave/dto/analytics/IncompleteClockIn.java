@@ -15,8 +15,14 @@ public class IncompleteClockIn {
     @JsonProperty("clock_in_id")
     private Long clockInId;
 
+    @JsonProperty("register_number")
+    private String employeeRegisterNumber;
+
     @JsonProperty("employee_name")
     private String employeeName;
+
+    @JsonProperty("company_name")
+    private String companyName;
 
     @JsonProperty("date_time_in")
     private LocalDateTime dateTimeIn;

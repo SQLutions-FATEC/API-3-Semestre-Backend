@@ -3,7 +3,7 @@ package com.sqlutions.altave.service.impl;
 import com.sqlutions.altave.dto.analytics.AnalyticsDTO;
 import com.sqlutions.altave.dto.analytics.DailyRegisters;
 import com.sqlutions.altave.dto.analytics.EmployeeCount;
-import com.sqlutions.altave.dto.analytics.EmployeesByPeriod;
+import com.sqlutions.altave.dto.analytics.EmployeesByShift;
 import com.sqlutions.altave.dto.analytics.RoleHours;
 import com.sqlutions.altave.repository.AnalyticsRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
@@ -57,7 +57,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .incompleteClockIns(
                         analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48))
                 )
-                .employeesByPeriod(new EmployeesByPeriod(
+                .employeesByShift(new EmployeesByShift(
                         analyticsRepository.countMidnightToMorning(companyId),
                         analyticsRepository.countMorningToAfternoon(companyId),
                         analyticsRepository.countAfternoonToNight(companyId)

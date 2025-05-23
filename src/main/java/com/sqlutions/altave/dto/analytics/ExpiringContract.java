@@ -15,8 +15,14 @@ public class ExpiringContract {
     @JsonProperty("contract_id")
     private Long contractId;
 
+    @JsonProperty("register_number")
+    private String employeeRegisterNumber;
+
     @JsonProperty("employee_name")
     private String employeeName;
+
+    @JsonProperty("company_name")
+    private String companyName;
 
     @JsonProperty("end_date")
     private LocalDate endDate;

@@ -35,5 +35,5 @@ public class AnalyticsDTO {
     private List<IncompleteClockIn> incompleteClockIns;
 
     @JsonProperty("employees_by_period")
-    private EmployeesByPeriod employeesByPeriod;
+    private EmployeesByShift employeesByShift;
 }

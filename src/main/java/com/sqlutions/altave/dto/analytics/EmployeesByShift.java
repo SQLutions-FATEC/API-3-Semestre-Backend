@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EmployeesByPeriod {
+public class EmployeesByShift {
     @JsonProperty("midnight_to_morning")
     private int midnightToMorning;
 
