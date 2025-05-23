@@ -67,7 +67,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                                                 @Param("twoMonthsFromNow") LocalDate twoMonthsFromNow);
 
     @Query("""
-            SELECT new com.sqlutions.altave.dto.analytics.IncompleteClockIn(c.clockInId, e.registerNumber, e.employeeName, ct.company.tradeName, c.dateTimeIn, c.dateTimeOut)
+            SELECT new com.sqlutions.altave.dto.analytics.IncompleteClockIn(c.clockInId, e.registerNumber, e.employeeName, ct.role.name, ct.company.tradeName, c.dateTimeIn, c.dateTimeOut)
                 FROM ClockIn c JOIN c.employee e JOIN e.contracts ct
                             WHERE ((c.dateTimeIn IS NOT NULL AND c.dateTimeOut IS NULL) OR
                                    (c.dateTimeIn IS NULL AND c.dateTimeOut IS NOT NULL))

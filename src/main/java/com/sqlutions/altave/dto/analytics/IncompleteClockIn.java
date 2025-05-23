@@ -21,6 +21,9 @@ public class IncompleteClockIn {
     @JsonProperty("employee_name")
     private String employeeName;
 
+    @JsonProperty("role_name")
+    private String roleName;
+
     @JsonProperty("company_name")
     private String companyName;
 
