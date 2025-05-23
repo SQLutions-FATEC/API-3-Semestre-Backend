@@ -1,12 +1,17 @@
 package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.CompanyDTO;
+import com.sqlutions.altave.dto.CompanyResponseDTO;
 import com.sqlutions.altave.entity.Company;
+import com.sqlutions.altave.entity.Contract;
 import com.sqlutions.altave.repository.CompanyRepository;
+import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.service.CompanyService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,11 +21,37 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Autowired
+    private ContractRepository contractRepository;
+
     @Override
     public List<CompanyDTO> getAllCompanies() {
         return companyRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public CompanyResponseDTO getCompanies(int page, int size) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        List<Company> companies = companyRepository.findAll();
+
+        int total = companies.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<CompanyDTO> paged = companies.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return CompanyResponseDTO.builder()
+                .items(paged)
+                .total(total)
+                .build();
     }
 
     @Override
@@ -51,17 +82,26 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public void deleteCompany(Long id) {
-        Company company = companyRepository.findById(id)
+        Company company = companyRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
 
-        company.setDeleted(true);  // Realizando o Soft Delete
+        List<Contract> contracts = contractRepository.findByCompanyAndDeletedAtIsNull(company);
+
+        for (Contract contract : contracts) {
+            contract.setDeletedAt(LocalDateTime.now());
+            contractRepository.save(contract);
+        }
+
+        company.setDeletedAt(LocalDateTime.now());
         companyRepository.save(company);
     }
 
+
     @Override
     public List<CompanyDTO> getAllActiveCompanies() {
-        List<Company> activeCompanies = companyRepository.findByDeletedFalse();  // Busca empresas ativas
+        List<Company> activeCompanies = companyRepository.findByDeletedAtIsNull();
         return activeCompanies.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -69,7 +109,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CompanyDTO getActiveCompanyById(Long id) {
-        Company company = companyRepository.findByIdAndDeletedFalse(id)
+        Company company = companyRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada ou já deletada"));
         return convertToDTO(company);
     }
