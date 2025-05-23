@@ -58,9 +58,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                         analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48))
                 )
                 .employeesByShift(new EmployeesByShift(
-                        analyticsRepository.countMidnightToMorning(companyId),
-                        analyticsRepository.countMorningToAfternoon(companyId),
-                        analyticsRepository.countAfternoonToNight(companyId)
+                        analyticsRepository.countMidnightToMorning(companyId, now.minusWeeks(1)),
+                        analyticsRepository.countMorningToAfternoon(companyId, now.minusWeeks(1)),
+                        analyticsRepository.countAfternoonToNight(companyId, now.minusWeeks(1))
                 ))
                 .build();
     }
