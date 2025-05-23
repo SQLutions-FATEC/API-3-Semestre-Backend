@@ -83,7 +83,8 @@ public class ClockInServiceImpl implements ClockInService {
                     }
 
                     Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                            ci.getEmployee(), ci.getDateTimeIn().toLocalDate());
+                            ci.getEmployee(),
+                            ci.getDateTimeIn() == null ? ci.getDateTimeOut().toLocalDate() : ci.getDateTimeIn().toLocalDate());
 
                     if (contractOpt.isEmpty()) return false;
 
