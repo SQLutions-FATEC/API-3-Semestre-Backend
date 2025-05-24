@@ -24,14 +24,15 @@ public class CompanyController {
     public ResponseEntity<?> getCompanies(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) boolean all) {
+            @RequestParam(required = false) boolean all,
+            @RequestParam(required = false) String name) {
 
         if (all) {
             List<CompanyDTO> companies = companyService.getAllCompanies();
             return ResponseEntity.ok(companies);
         }
 
-        CompanyResponseDTO response = companyService.getCompanies(page, size);
+        CompanyResponseDTO response = companyService.getCompanies(page, size,name);
         return ResponseEntity.ok(response);
     }
 
