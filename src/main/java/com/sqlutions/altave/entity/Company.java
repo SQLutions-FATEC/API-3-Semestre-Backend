@@ -3,6 +3,7 @@ package com.sqlutions.altave.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -21,5 +22,8 @@ public class Company {
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Contract> contracts;
+
+    @Column(name = "deleted_at", nullable = true)
+    private LocalDateTime deletedAt;
 }
 

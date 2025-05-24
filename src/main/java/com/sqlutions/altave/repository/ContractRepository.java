@@ -18,6 +18,8 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
             "AND :data BETWEEN c.startDate AND c.endDate")
     Optional<Contract> findContractByEmployeeAndDate(@Param("employee") Employee employee, @Param("data") LocalDate data);
 
+    List<Contract> findByCompanyAndDeletedAtIsNull(Company company);
+
     List<Contract> findByCompany(Company company);
 
     @Query("SELECT c FROM Contract c WHERE c.employee = :employee AND " +

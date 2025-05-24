@@ -12,5 +12,7 @@ import org.springframework.data.domain.Page;
         EmployeeResponseWithTotalDTO getEmployees(int page, int size, String name);
         List<EmployeeDTO> getAllEmployees();
         EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO);
+        void deleteEmployee(Long id);
+        List<EmployeeDTO> getAllActiveEmployees();
     }
 

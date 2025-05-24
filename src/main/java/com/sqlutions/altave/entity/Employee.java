@@ -3,6 +3,8 @@ package com.sqlutions.altave.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.Date;
 
@@ -34,4 +36,7 @@ public class Employee {
     @OneToMany(mappedBy = "employee")
     @JsonIgnore
     private Set<ClockIn> clockIns;
+
+    @Column(name = "deleted_at", nullable = true)
+    private LocalDateTime deletedAt;
 }

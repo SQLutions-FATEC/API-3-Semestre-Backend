@@ -72,11 +72,11 @@ public class ClockInServiceImpl implements ClockInService {
         List<ClockIn> allClockIns = clockInRepository.findAllByOrderByDateTimeInDesc();
 
         List<ClockIn> filtered = allClockIns.stream()
+                .filter(ci -> ci.getEmployee() != null && ci.getEmployee().getDeletedAt() == null)
                 .filter(ci -> clockInSearchDTO.getEmployee() == null ||
-                        (ci.getEmployee() != null &&
-                                ci.getEmployee().getEmployeeName() != null &&
+                        ci.getEmployee().getEmployeeName() != null &&
                                 ci.getEmployee().getEmployeeName().toLowerCase()
-                                        .contains(clockInSearchDTO.getEmployee().toLowerCase())))
+                        .contains(clockInSearchDTO.getEmployee().toLowerCase()))
                 .filter(ci -> {
                     if (clockInSearchDTO.getCompany() == null && clockInSearchDTO.getRole() == null) {
                         return true;
