@@ -19,7 +19,6 @@ public class ClockIn {
     private Long clockInId;
     private LocalDateTime dateTimeIn;
     private LocalDateTime dateTimeOut;
-    private String direction;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
