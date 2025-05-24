@@ -38,7 +38,9 @@ public class CompanyServiceImpl implements CompanyService {
             page = page - 1;
         }
 
-        List<Company> companies = companyRepository.findAll();
+        List<Company> companies = companyRepository.findAll().stream()
+                .filter(company -> company.getDeletedAt() == null)
+                .toList();
 
         int total = companies.size();
         int start = Math.min(page * size, total);
