@@ -35,9 +35,9 @@ public class ClockInServiceImpl implements ClockInService {
     @Override
     public ClockInResponseDTO createClockIn(ClockInRequestDTO clockInRequestDTO) {
         LocalDateTime dateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime dateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         if (dateTimeIn.isAfter(dateTimeOut)) {
             throw new ClockInException("Data de entrada não pode ser posterior à data de saída");
@@ -83,7 +83,8 @@ public class ClockInServiceImpl implements ClockInService {
                     }
 
                     Optional<Contract> contractOpt = contractRepository.findContractByEmployeeAndDate(
-                            ci.getEmployee(), ci.getDateTimeIn().toLocalDate());
+                            ci.getEmployee(),
+                            ci.getDateTimeIn() == null ? ci.getDateTimeOut().toLocalDate() : ci.getDateTimeIn().toLocalDate());
 
                     if (contractOpt.isEmpty()) return false;
 
@@ -107,9 +108,6 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTimeIn().isBefore(clockInSearchDTO.getStartedAtDate()))
                 .filter(ci -> clockInSearchDTO.getEndAtDate() == null ||
                         !ci.getDateTimeIn().isAfter(clockInSearchDTO.getEndAtDate()))
-                .filter(ci -> clockInSearchDTO.getDirection() == null ||
-                        (ci.getDirection() != null &&
-                                ci.getDirection().equalsIgnoreCase(clockInSearchDTO.getDirection())))
 
                 .filter(ci -> clockInSearchDTO.getMinHours() == null ||
                         (ci.getWorkedHours() != null && ci.getWorkedHours() >= clockInSearchDTO.getMinHours()))
@@ -139,9 +137,9 @@ public class ClockInServiceImpl implements ClockInService {
         Employee employee = convertToEntity(employeeDTO);
 
         LocalDateTime newDateTimeIn = LocalDateTime.parse(clockInRequestDTO.getDateTimeIn(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         LocalDateTime newDateTimeOut = LocalDateTime.parse(clockInRequestDTO.getDateTimeOut(),
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         if (newDateTimeIn.isAfter(newDateTimeOut)) {
             throw new ClockInException("Data de entrada não pode ser posterior à data de saída");
@@ -173,7 +171,7 @@ public class ClockInServiceImpl implements ClockInService {
     }
 
     private ClockInListDTO mapToListDTO(ClockIn clockIn) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         Contract contract = contractRepository.findById(clockIn.getContract().getContractId())
                 .orElseThrow(() -> new NoSuchElementException("Contract not found"));
@@ -190,7 +188,9 @@ public class ClockInServiceImpl implements ClockInService {
                         .companyName(contract.getCompany().getCompanyName())
                         .build())
                 .roleName(contract.getRole().getName())
-                .dateTimeIn(clockIn.getDateTimeIn().format(formatter))
+                .dateTimeIn(clockIn.getDateTimeIn() != null
+                        ? clockIn.getDateTimeIn().format(formatter)
+                        : null)
                 .dateTimeOut(clockIn.getDateTimeOut() != null
                         ? clockIn.getDateTimeOut().format(formatter)
                         : null)
@@ -257,9 +257,6 @@ public class ClockInServiceImpl implements ClockInService {
                         !ci.getDateTimeIn().isBefore(filters.getStartedAtDate()))
                 .filter(ci -> filters.getEndAtDate() == null ||
                         !ci.getDateTimeIn().isAfter(filters.getEndAtDate()))
-                .filter(ci -> filters.getDirection() == null ||
-                        (ci.getDirection() != null &&
-                                ci.getDirection().equalsIgnoreCase(filters.getDirection())))
                 .filter(ci -> filters.getMinHours() == null ||
                         (ci.getWorkedHours() != null && ci.getWorkedHours() >= filters.getMinHours()))
                 .filter(ci -> filters.getMaxHours() == null ||

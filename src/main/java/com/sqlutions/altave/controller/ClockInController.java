@@ -48,14 +48,13 @@ public class ClockInController {
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String start_date,
             @RequestParam(required = false) String end_date,
-            @RequestParam(required = false) String direction,
             @RequestParam(required = false) Double min_hours,
             @RequestParam(required = false) Double max_hours,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean export
     ) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
@@ -67,7 +66,7 @@ public class ClockInController {
                 endAtDate = LocalDateTime.parse(end_date, formatter);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm:ss");
         }
 
         ClockInSearchDTO filters = ClockInSearchDTO.builder()
@@ -76,7 +75,6 @@ public class ClockInController {
                 .role(role)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
-                .direction(direction)
                 .minHours(min_hours)
                 .maxHours(max_hours)
                 .build();
