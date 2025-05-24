@@ -60,7 +60,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Endpoint para deletar empresa")
+    @Operation(summary = "Endpoint para deletar empresa (soft delete)")
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();

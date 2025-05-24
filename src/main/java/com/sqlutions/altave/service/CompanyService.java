@@ -2,7 +2,7 @@ package com.sqlutions.altave.service;
 
 import com.sqlutions.altave.dto.CompanyDTO;
 import com.sqlutions.altave.dto.CompanyResponseDTO;
-import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 public interface CompanyService {
@@ -12,4 +12,5 @@ public interface CompanyService {
     CompanyDTO createCompany(CompanyDTO companyDTO);
     CompanyDTO updateCompany(Long id, CompanyDTO companyDTO);
     void deleteCompany(Long id);
+    CompanyDTO getActiveCompanyById(Long id);
 }

@@ -2,14 +2,17 @@ package com.sqlutions.altave.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Where(clause = "deleted_at IS NULL")
 public class Contract {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +36,8 @@ public class Contract {
         return (startDate != null && !startDate.isAfter(today) &&
                 (endDate != null && !endDate.isBefore(today)));
     }
+
+    @Column(name = "deleted_at", nullable = true)
+    private LocalDateTime deletedAt;
 }
 
