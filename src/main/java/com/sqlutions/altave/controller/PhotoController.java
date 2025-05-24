@@ -20,12 +20,13 @@ public class PhotoController {
     @Autowired
     private PhotoService photoService;
 
-    @Operation(summary = "Upload de foto do funcionário")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Foto salva com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro ao salvar a foto")
     })
+
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Endpoint para fazer upload da foto de um funcionário")
     public ResponseEntity<String> uploadPhoto(
             @RequestParam("file") MultipartFile file,
             @RequestParam("employeeId") Long employeeId) {
@@ -37,16 +38,17 @@ public class PhotoController {
         }
     }
 
-    @Operation(summary = "Retorna a imagem como array de bytes pelo ID do funcionário(Para Mobile e consumo de API)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Imagem retornada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Foto não encontrada"),
             @ApiResponse(responseCode = "500", description = "Erro ao ler os bytes da foto")
     })
+
     @GetMapping(
             value = "/bytes/employee/{employeeId}",
             produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE }
     )
+    @Operation(summary = "Endpoint para obter a foto do funcionário em formato de bytes (uso em mobile e APIs)")
     public @ResponseBody byte[] servePhotoBytes(@PathVariable Long employeeId) {
         try {
             return photoService.getPhotoBytesByEmployeeId(employeeId);
@@ -55,7 +57,6 @@ public class PhotoController {
         }
     }
 
-    @Operation(summary = "Serve a imagem como Resource pelo ID do funcionário(Para WEB)")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Imagem retornada como Resource"),
             @ApiResponse(responseCode = "404", description = "Foto não encontrada"),
@@ -65,6 +66,7 @@ public class PhotoController {
             value = "/file/employee/{employeeId}",
             produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE }
     )
+    @Operation(summary = "Endpoint para obter a foto do funcionário como recurso (uso em aplicações web)")
     public ResponseEntity<Resource> servePhotoAsResource(@PathVariable Long employeeId) {
         Resource resource = photoService.getPhotoResourceByEmployeeId(employeeId);
         Photo photo = photoService.getPhotoByEmployeeId(employeeId);
@@ -88,12 +90,12 @@ public class PhotoController {
         }
     }
 
-    @Operation(summary = "Deleta a foto do funcionário pelo ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Foto deletada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Foto não encontrada")
     })
     @DeleteMapping("/delete/employee/{employeeId}")
+    @Operation(summary = "Endpoint para deletar a foto de um funcionário pelo ID")
     public ResponseEntity<String> deletePhoto(@PathVariable Long employeeId) {
         try {
             photoService.deletePhotoByEmployeeId(employeeId);
