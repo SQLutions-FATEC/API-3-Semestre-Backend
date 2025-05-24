@@ -141,7 +141,7 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException("Não é possível inativar um contrato que ainda não começou.");
         }
 
-        contract.setEndDate(today);
+        contract.setEndDate(today.minusDays(1));
 
         return new ContractResponseDTO(contractRepository.save(contract));
     }
