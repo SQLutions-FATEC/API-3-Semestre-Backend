@@ -59,19 +59,41 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public List<ContractResponseDTO> createContracts(CreateContractsRequestDTO request) {
-        var employee = employeeRepository.findById(request.getEmployee_id())
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+        var employee = employeeRepository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new BusinessException("Funcionário não encontrado"));
 
         List<ContractResponseDTO> createdContracts = new ArrayList<>();
+        boolean hasActiveContract = false;
 
+        // Primeiro valida todos os contratos antes de criar
         for (CreateContractsRequestDTO.SingleContractDTO dto : request.getContracts()) {
-            LocalDate startDate = LocalDate.parse(dto.getDatetime_start().substring(0, 10));
-            LocalDate endDate = LocalDate.parse(dto.getDatetime_end().substring(0, 10));
+            LocalDate startDate = LocalDate.parse(dto.getDateStart());
+            LocalDate endDate = dto.getDateEnd() != null ? LocalDate.parse(dto.getDateEnd()) : null;
 
             validateContractDates(startDate, endDate);
 
-            var company = companyRepository.findById(dto.getCompany_id()).orElseThrow();
-            var role = roleRepository.findById(dto.getRole_id()).orElseThrow();
+            if (endDate == null || endDate.isAfter(LocalDate.now())) {
+                if (hasActiveContract) {
+                    throw new BusinessException("Apenas um contrato pode estar ativo por funcionário");
+                }
+                hasActiveContract = true;
+            }
+        }
+
+        // Se está criando novo contrato ativo, inativa os anteriores
+        if (hasActiveContract) {
+            inactivateActiveContracts(employee.getId());
+        }
+
+        // Agora cria todos os contratos
+        for (CreateContractsRequestDTO.SingleContractDTO dto : request.getContracts()) {
+            LocalDate startDate = LocalDate.parse(dto.getDateStart());
+            LocalDate endDate = dto.getDateEnd() != null ? LocalDate.parse(dto.getDateEnd()) : null;
+
+            var company = companyRepository.findById(dto.getCompanyId())
+                    .orElseThrow(() -> new BusinessException("Empresa não encontrada"));
+            var role = roleRepository.findById(dto.getRoleId())
+                    .orElseThrow(() -> new BusinessException("Cargo não encontrado"));
 
             Contract contract = new Contract();
             contract.setEmployee(employee);
@@ -80,11 +102,18 @@ public class ContractServiceImpl implements ContractService {
             contract.setStartDate(startDate);
             contract.setEndDate(endDate);
 
-            contractRepository.save(contract);
-            createdContracts.add(new ContractResponseDTO(contract));
+            createdContracts.add(new ContractResponseDTO(contractRepository.save(contract)));
         }
 
         return createdContracts;
+    }
+
+    private void inactivateActiveContracts(Long employeeId) {
+        List<Contract> activeContracts = contractRepository.findActiveContractsByEmployee(employeeId, LocalDate.now());
+        activeContracts.forEach(contract -> {
+            contract.setEndDate(LocalDate.now().minusDays(1));
+            contractRepository.save(contract);
+        });
     }
 
 

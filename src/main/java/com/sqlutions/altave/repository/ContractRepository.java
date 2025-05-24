@@ -30,4 +30,11 @@ public interface ContractRepository extends JpaRepository<Contract, Long> {
     List<Contract> findOverlappingContractsByEmployee(@Param("employee") Employee employee,
                                                       @Param("startDate") LocalDate startDate,
                                                       @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT c FROM Contract c WHERE " +
+            "c.employee.id = :employeeId AND " +
+            "c.startDate <= :referenceDate AND " +
+            "(c.endDate IS NULL OR c.endDate >= :referenceDate)")
+    List<Contract> findActiveContractsByEmployee(@Param("employeeId") Long employeeId,
+                                                 @Param("referenceDate") LocalDate referenceDate);
 }

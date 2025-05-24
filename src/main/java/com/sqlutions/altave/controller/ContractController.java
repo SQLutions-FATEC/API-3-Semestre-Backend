@@ -5,6 +5,7 @@ import com.sqlutions.altave.dto.ContractResponseDTO;
 import com.sqlutions.altave.dto.CreateContractsRequestDTO;
 import com.sqlutions.altave.service.ContractService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class ContractController {
     }
 
     @PostMapping
-    public ResponseEntity<List<ContractResponseDTO>> createContracts(@RequestBody CreateContractsRequestDTO request) {
+    public ResponseEntity<List<ContractResponseDTO>> createContracts(@Valid @RequestBody CreateContractsRequestDTO request) {
         return ResponseEntity.ok(contractService.createContracts(request));
     }
 

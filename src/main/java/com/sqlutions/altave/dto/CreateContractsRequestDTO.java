@@ -1,18 +1,28 @@
 package com.sqlutions.altave.dto;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class CreateContractsRequestDTO {
-    private Long employee_id;
+    @JsonProperty("employee_id")
+    private Long employeeId;
     private List<SingleContractDTO> contracts;
 
     @Data
     public static class SingleContractDTO {
-        private Long company_id;
-        private Long role_id;
-        private String datetime_start;
-        private String datetime_end;
+        @JsonProperty("company_id")
+        private Long companyId;
+
+        @JsonProperty("role_id")
+        private Long roleId;
+
+        @JsonProperty("date_start")
+        private String dateStart;
+
+        @JsonProperty("date_end")
+        private String dateEnd;
     }
 }
