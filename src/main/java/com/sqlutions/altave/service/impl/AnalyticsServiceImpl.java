@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,8 +29,8 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
     LocalDateTime now = LocalDateTime.now();
 
-    private List<RoleHours> getHoursWorkedByRole(Long companyId) {
-        return analyticsRepository.getHoursWorkedByRole(companyId, now.minusWeeks(1).toLocalDate()).stream()
+    private List<RoleHours> getHoursWorkedByRole(Long companyId, LocalDate startDate, LocalDate endDate) {
+        return analyticsRepository.getHoursWorkedByRole(companyId, startDate, endDate).stream()
                 .map(row -> RoleHours.builder()
                         .roleName((String) row[0])
                         .totalHours(((Number) row[1]).doubleValue())
@@ -37,7 +38,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 .collect(Collectors.toList());
     }
 
-    public AnalyticsDTO getAnalyticsForCompany(Long companyId) {
+    public AnalyticsDTO getAnalyticsForCompany(Long companyId, LocalDate startDate, LocalDate endDate) {
 
         return AnalyticsDTO.builder()
                 .companyId(companyId)
@@ -46,17 +47,13 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                         analyticsRepository.countClockInWithIn(companyId, now.minusHours(24)),
                         analyticsRepository.countClockInWithOut(companyId, now.minusHours(24))
                 ))
-                .hoursWorkedByRole(getHoursWorkedByRole(companyId))
+                .hoursWorkedByRole(getHoursWorkedByRole(companyId, startDate, endDate))
                 .employeeCount(new EmployeeCount(
                         analyticsRepository.countMaleWorkers(companyId),
                         analyticsRepository.countFemaleWorkers(companyId)
                 ))
-                .expiringContracts(
-                        analyticsRepository.getExpiringContracts(companyId, now.plusMonths(2).toLocalDate())
-                )
-                .incompleteClockIns(
-                        analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48))
-                )
+                .expiringContracts(analyticsRepository.getExpiringContracts(companyId))
+                .incompleteClockIns(analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48)))
                 .employeesByShift(new EmployeesByShift(
                         analyticsRepository.countMidnightToMorning(companyId, now.minusWeeks(1)),
                         analyticsRepository.countMorningToAfternoon(companyId, now.minusWeeks(1)),
