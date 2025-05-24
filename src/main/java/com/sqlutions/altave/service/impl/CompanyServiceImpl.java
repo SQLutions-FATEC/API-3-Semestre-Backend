@@ -47,7 +47,7 @@ public class CompanyServiceImpl implements CompanyService {
             companies = companies.stream()
                     .filter(c -> c.getCompanyName() != null &&
                             c.getCompanyName().toLowerCase().contains(nameFilter))
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         int total = companies.size();
@@ -106,15 +106,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         company.setDeletedAt(LocalDateTime.now());
         companyRepository.save(company);
-    }
-
-
-    @Override
-    public List<CompanyDTO> getAllActiveCompanies() {
-        List<Company> activeCompanies = companyRepository.findByDeletedAtIsNull();
-        return activeCompanies.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
     }
 
     @Override
