@@ -17,7 +17,7 @@ public class AnalyticsController {
     private final AnalyticsService analyticsService;
 
     @GetMapping
-    @Operation(summary = "Endpoint para deletar a foto de um funcionário pelo ID")
+    @Operation(summary = "Endpoint para obter dados analíticos de uma empresa em um intervalo de datas")
     public AnalyticsDTO getAnalytics(
             @RequestParam Long companyId,
             @RequestParam String start_date,
