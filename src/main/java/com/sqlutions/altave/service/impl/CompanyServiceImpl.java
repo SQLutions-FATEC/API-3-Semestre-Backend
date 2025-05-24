@@ -1,6 +1,8 @@
 package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.CompanyDTO;
+import com.sqlutions.altave.dto.CompanyListDTO;
+import com.sqlutions.altave.dto.CompanyResponseDTO;
 import com.sqlutions.altave.entity.ClockIn;
 import com.sqlutions.altave.entity.Company;
 import com.sqlutions.altave.entity.Contract;
@@ -11,9 +13,6 @@ import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.service.CompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +37,33 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Page<CompanyDTO> getCompanies(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return companyRepository.findAll(pageable).map(this::convertToDTO);
+    public CompanyResponseDTO getCompanies(int page, int size, String name) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        List<Company> companies = companyRepository.findAll();
+
+        if (name != null && !name.trim().isEmpty()) {
+            String nameFilter = name.trim().toLowerCase();
+            companies = companies.stream()
+                    .filter(c -> c.getCompanyName() != null &&
+                            c.getCompanyName().toLowerCase().contains(nameFilter))
+                    .collect(Collectors.toList());
+        }
+
+        int total = companies.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<CompanyDTO> paged = companies.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return CompanyResponseDTO.builder()
+                .items(paged)
+                .total(total)
+                .build();
     }
 
     @Override
