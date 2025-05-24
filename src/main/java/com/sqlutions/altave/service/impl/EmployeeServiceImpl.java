@@ -42,12 +42,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeResponseWithTotalDTO getEmployees(int page, int size) {
+    public EmployeeResponseWithTotalDTO getEmployees(int page, int size, String name) {
         if (page > 0) {
             page = page - 1;
         }
 
         List<Employee> employees = employeeRepository.findAll();
+
+        if (name != null && !name.trim().isEmpty()) {
+            String nameFilter = name.trim().toLowerCase();
+            employees = employees.stream()
+                    .filter(e -> e.getEmployeeName() != null &&
+                            e.getEmployeeName().toLowerCase().contains(nameFilter))
+                    .toList();
+        }
 
         int total = employees.size();
         int start = Math.min(page * size, total);

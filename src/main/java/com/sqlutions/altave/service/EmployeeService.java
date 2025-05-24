@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
     public interface EmployeeService {
         EmployeeDTO createEmployee(EmployeeDTO employeeDTO);
         EmployeeDTO getEmployeeById(Long id);
-        EmployeeResponseWithTotalDTO getEmployees(int page, int size);
+        EmployeeResponseWithTotalDTO getEmployees(int page, int size, String name);
         List<EmployeeDTO> getAllEmployees();
         EmployeeDTO updateEmployee(Long id, EmployeeDTO employeeDTO);
     }
