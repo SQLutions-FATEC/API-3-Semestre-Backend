@@ -23,6 +23,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND (c.dateTimeIn < CURRENT_TIMESTAMP AND c.dateTimeIn >= :startDate)
                 AND c.employee.id = ct.employee.id
+                AND c.employee.deletedAt IS NULL
             """)
     Integer countClockInWithIn(@Param("companyId") Long companyId,
                                @Param("startDate") LocalDateTime startDate);
@@ -36,6 +37,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 AND (c.dateTimeOut < CURRENT_TIMESTAMP
                 AND c.dateTimeOut >= :startDate)
                 AND c.employee.id = ct.employee.id
+                AND c.employee.deletedAt IS NULL
             """)
     Integer countClockInWithOut(@Param("companyId") Long companyId,
                                 @Param("startDate") LocalDateTime startDate);
@@ -45,12 +47,14 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
             SELECT r.name AS role_name, SUM(EXTRACT(EPOCH FROM (c.date_time_out - c.date_time_in))/3600) AS total_hours
                 FROM clock_in c
                     JOIN contract ct ON c.employee_id = ct.employee_id
+                    JOIN employee e ON ct.employee_id = e.id
                     JOIN role r ON ct.role_id = r.id
             WHERE c.date_time_in IS NOT NULL AND c.date_time_out IS NOT NULL
                 AND c.date_time_out BETWEEN ct.start_date AND ct.end_date
                 AND c.date_time_out < :endDate
                 AND c.date_time_in >= :startDate
                 AND ct.company_id = :companyId
+                AND e.deleted_at IS NULL
             GROUP BY r.id;
             """, nativeQuery = true)
     List<Object[]> getHoursWorkedByRole(@Param("companyId") Long companyId,
@@ -63,6 +67,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
             WHERE e.sex = 'M'
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND CURRENT_DATE BETWEEN ct.startDate AND ct.endDate
+                AND e.deletedAt IS NULL
             """)
     Integer countMaleWorkers(@Param("companyId") Long companyId);
 
@@ -72,6 +77,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
             WHERE e.sex = 'F'
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND CURRENT_DATE BETWEEN ct.startDate AND ct.endDate
+                AND e.deletedAt IS NULL
             """)
     Integer countFemaleWorkers(@Param("companyId") Long companyId);
 
@@ -80,6 +86,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 FROM Contract ct JOIN ct.employee e
             WHERE (:companyId IS NULL OR ct.company.id = :companyId)
                 AND ct.endDate > CURRENT_DATE
+                AND e.deletedAt IS NULL
             ORDER BY ct.endDate ASC
             LIMIT 5
             """)
@@ -94,6 +101,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 AND (c.dateTimeIn BETWEEN ct.startDate AND ct.endDate OR c.dateTimeOut BETWEEN ct.startDate AND ct.endDate)
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND (c.dateTimeIn <= :since OR c.dateTimeOut <= :since)
+                AND e.deletedAt IS NULL
             """)
     List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
 
@@ -105,6 +113,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND c.dateTimeIn >= :since
                 AND c.dateTimeOut < CURRENT_TIMESTAMP
+                AND c.employee.deletedAt IS NULL
             """)
     int countMidnightToMorning(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
 
@@ -116,6 +125,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
                 AND c.dateTimeIn >= :since
                 AND c.dateTimeOut < CURRENT_TIMESTAMP
+                AND c.employee.deletedAt IS NULL
             """)
     int countMorningToAfternoon(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
 
@@ -127,6 +137,7 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
                 AND ct.company.id = :companyId
                 AND c.dateTimeIn >= :since
                 AND c.dateTimeOut < CURRENT_TIMESTAMP
+                AND c.employee.deletedAt IS NULL
             """)
     int countAfternoonToNight(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
 }
