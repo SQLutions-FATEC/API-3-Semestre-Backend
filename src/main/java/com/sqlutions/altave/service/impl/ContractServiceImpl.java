@@ -65,7 +65,6 @@ public class ContractServiceImpl implements ContractService {
         List<ContractResponseDTO> createdContracts = new ArrayList<>();
         boolean hasActiveContract = false;
 
-        // Primeiro valida todos os contratos antes de criar
         for (CreateContractsRequestDTO.SingleContractDTO dto : request.getContracts()) {
             LocalDate startDate = LocalDate.parse(dto.getDateStart());
             LocalDate endDate = dto.getDateEnd() != null ? LocalDate.parse(dto.getDateEnd()) : null;
@@ -80,12 +79,10 @@ public class ContractServiceImpl implements ContractService {
             }
         }
 
-        // Se está criando novo contrato ativo, inativa os anteriores
         if (hasActiveContract) {
             inactivateActiveContracts(employee.getId());
         }
 
-        // Agora cria todos os contratos
         for (CreateContractsRequestDTO.SingleContractDTO dto : request.getContracts()) {
             LocalDate startDate = LocalDate.parse(dto.getDateStart());
             LocalDate endDate = dto.getDateEnd() != null ? LocalDate.parse(dto.getDateEnd()) : null;
