@@ -33,7 +33,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
     @Override
-    public CompanyResponseDTO getCompanies(int page, int size) {
+    public CompanyResponseDTO getCompanies(int page, int size, String name) {
         if (page > 0) {
             page = page - 1;
         }
@@ -41,6 +41,14 @@ public class CompanyServiceImpl implements CompanyService {
         List<Company> companies = companyRepository.findAll().stream()
                 .filter(company -> company.getDeletedAt() == null)
                 .toList();
+
+        if (name != null && !name.trim().isEmpty()) {
+            String nameFilter = name.trim().toLowerCase();
+            companies = companies.stream()
+                    .filter(c -> c.getCompanyName() != null &&
+                            c.getCompanyName().toLowerCase().contains(nameFilter))
+                    .collect(Collectors.toList());
+        }
 
         int total = companies.size();
         int start = Math.min(page * size, total);

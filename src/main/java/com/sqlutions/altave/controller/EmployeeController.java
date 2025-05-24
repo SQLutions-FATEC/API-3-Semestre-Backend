@@ -47,13 +47,27 @@ public class EmployeeController {
     @Operation(summary = "Endpoint para listar funcionários com ou sem paginação")
     public ResponseEntity<?> getEmployees(
             @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String name) {
 
         if (page == null || size == null || page < 0 || size <= 0) {
             List<EmployeeDTO> employees = employeeService.getAllEmployees();
             return ResponseEntity.ok(employees);
         }
-        EmployeeResponseWithTotalDTO response = employeeService.getEmployees(page, size);
+        EmployeeResponseWithTotalDTO response = employeeService.getEmployees(page, size, name);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Endpoint para deletar funcionário")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
+        employeeService.deleteEmployee(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/active")
+    @Operation(summary = "Endpoint para buscar os funcionários ativos")
+    public List<EmployeeDTO> getAllActiveEmployees() {
+        return employeeService.getAllActiveEmployees();
     }
 }
