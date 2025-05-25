@@ -1,5 +1,6 @@
 package com.sqlutions.altave.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import com.sqlutions.altave.dto.analytics.AnalyticsDTO;
 import com.sqlutions.altave.service.AnalyticsService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class AnalyticsController {
     private final AnalyticsService analyticsService;
 
     @GetMapping
+    @Operation(summary = "Endpoint para obter dados analíticos de uma empresa em um intervalo de datas")
     public AnalyticsDTO getAnalytics(
             @RequestParam Long companyId,
             @RequestParam String start_date,
