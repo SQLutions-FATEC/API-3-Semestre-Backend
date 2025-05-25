@@ -100,10 +100,9 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
             WHERE ((c.dateTimeIn IS NOT NULL AND c.dateTimeOut IS NULL) OR (c.dateTimeIn IS NULL AND c.dateTimeOut IS NOT NULL))
                 AND (c.dateTimeIn BETWEEN ct.startDate AND ct.endDate OR c.dateTimeOut BETWEEN ct.startDate AND ct.endDate)
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
-                AND (c.dateTimeIn <= :since OR c.dateTimeOut <= :since)
                 AND e.deletedAt IS NULL
             """)
-    List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
+    List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId);
 
     @Query("""
             SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c

@@ -53,7 +53,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                         analyticsRepository.countFemaleWorkers(companyId)
                 ))
                 .expiringContracts(analyticsRepository.getExpiringContracts(companyId))
-                .incompleteClockIns(analyticsRepository.getIncompleteClockIns(companyId, now.minusHours(48)))
+                .incompleteClockIns(analyticsRepository.getIncompleteClockIns(companyId))
                 .employeesByShift(new EmployeesByShift(
                         analyticsRepository.countMidnightToMorning(companyId, now.minusWeeks(1)),
                         analyticsRepository.countMorningToAfternoon(companyId, now.minusWeeks(1)),
