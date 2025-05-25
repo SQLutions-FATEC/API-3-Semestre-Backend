@@ -185,12 +185,10 @@ public class ContractServiceImpl implements ContractService {
         List<Contract> activeContracts = contractRepository.findActiveContractsByEmployee(employeeId, LocalDate.now());
 
         if (activeContracts.size() > 1) {
-            // Encontra o contrato mais recente (com data de início mais recente)
             Contract mostRecent = activeContracts.stream()
                     .max(Comparator.comparing(Contract::getStartDate))
                     .orElseThrow();
 
-            // Inativa todos os outros
             activeContracts.forEach(contract -> {
                 if (!contract.equals(mostRecent)) {
                     contract.setEndDate(mostRecent.getStartDate().minusDays(1));
