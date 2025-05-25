@@ -19,4 +19,5 @@ public class EmployeeResponseDTO {
     private Date dataNascimento;
     private String tipoSanguineo;
     private String sexo;
+    private String registerNumber;
 }

@@ -1,9 +1,6 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.ClockInRequestDTO;
-import com.sqlutions.altave.dto.ClockInResponseDTO;
-import com.sqlutions.altave.dto.ClockInResponseWithTotalDTO;
-import com.sqlutions.altave.dto.ClockInSearchDTO;
+import com.sqlutions.altave.dto.*;
 import com.sqlutions.altave.service.ClockInService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RestController
 @RequestMapping("/clock_in")
@@ -26,32 +24,37 @@ public class ClockInController {
 
     @PostMapping
     @Operation(summary = "Endpoint para criar uma nova movimentação")
-    public ResponseEntity<ClockInResponseDTO> createMovimentacao(@Valid @RequestBody ClockInRequestDTO clockInRequestDTO) {
+    public ResponseEntity<ClockInResponseDTO> createClockIn(@Valid @RequestBody ClockInRequestDTO clockInRequestDTO) {
+        if (clockInRequestDTO.getDateTimeIn() == null || clockInRequestDTO.getDateTimeOut() == null) {
+            throw new IllegalArgumentException("Both dateTimeIn and dateTimeOut are required");
+        }
+
         ClockInResponseDTO createdMovimentacao = clockInService.createClockIn(clockInRequestDTO);
         return ResponseEntity.ok(createdMovimentacao);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Endpoint para buscar uma movimentação pelo ID")
-    public ResponseEntity<ClockInResponseDTO> getMovimentacaoById(@PathVariable Long id) {
-        ClockInResponseDTO movimentacao = clockInService.getClockInById(id);
-        return ResponseEntity.ok(movimentacao);
+    public ResponseEntity<ClockInResponseDTO> getClockInById(@PathVariable Long id) {
+        ClockInResponseDTO clockIn = clockInService.getClockInById(id);
+        return ResponseEntity.ok(clockIn);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Endpoint para obter todas as movimentações ou pesquisar com filtros")
-    public ResponseEntity<?> searchMovimentacoes(
+    public ResponseEntity<?> searchClockIns(
             @RequestParam(required = false) String employee,
             @RequestParam(required = false) String company,
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String start_date,
             @RequestParam(required = false) String end_date,
-            @RequestParam(required = false) String direction,
+            @RequestParam(required = false) Double min_hours,
+            @RequestParam(required = false) Double max_hours,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "false") boolean export
     ) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime startedAtDate = null;
         LocalDateTime endAtDate = null;
 
@@ -63,31 +66,38 @@ public class ClockInController {
                 endAtDate = LocalDateTime.parse(end_date, formatter);
             }
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm");
+            return ResponseEntity.badRequest().body("Formato de data inválido. Use o padrão yyyy-MM-dd HH:mm:ss");
         }
 
-        ClockInResponseWithTotalDTO response = clockInService.searchClockIns(ClockInSearchDTO.builder()
+        ClockInSearchDTO filters = ClockInSearchDTO.builder()
                 .employee(employee)
                 .company(company)
                 .role(role)
                 .startedAtDate(startedAtDate)
                 .endAtDate(endAtDate)
-                .direction(direction)
-                .build(), page, size);
+                .minHours(min_hours)
+                .maxHours(max_hours)
+                .build();
 
-        return ResponseEntity.ok(response);
+        if (export) {
+            List<ClockInListDTO> result = clockInService.exportClockIns(filters);
+            return ResponseEntity.ok(result);
+        } else {
+            ClockInResponseWithTotalDTO response = clockInService.searchClockIns(filters, page, size);
+            return ResponseEntity.ok(response);
+        }
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Endpoint para atualizar uma movimentação")
-    public ResponseEntity<ClockInResponseDTO> updateMovimentacao(@PathVariable Long id, @Valid @RequestBody ClockInRequestDTO clockInRequestDTO) throws ParseException {
+    public ResponseEntity<ClockInResponseDTO> updateClockIn(@PathVariable Long id, @Valid @RequestBody ClockInRequestDTO clockInRequestDTO) throws ParseException {
         ClockInResponseDTO updatedMovimentacao = clockInService.updateClockIn(id, clockInRequestDTO);
         return ResponseEntity.ok(updatedMovimentacao);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Endpoint para excluir uma movimentação")
-    public ResponseEntity<ClockInResponseDTO> deleteMovimentacao(@PathVariable Long id) {
+    public ResponseEntity<ClockInResponseDTO> deleteClockIn(@PathVariable Long id) {
         ClockInResponseDTO deletedMovimentacao = clockInService.deleteClockIn(id);
         return ResponseEntity.ok(deletedMovimentacao);
     }

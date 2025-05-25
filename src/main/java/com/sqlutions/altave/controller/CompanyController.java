@@ -1,6 +1,7 @@
 package com.sqlutions.altave.controller;
 
 import com.sqlutions.altave.dto.CompanyDTO;
+import com.sqlutions.altave.dto.CompanyResponseDTO;
 import com.sqlutions.altave.service.CompanyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,11 +19,21 @@ public class CompanyController {
     @Autowired
     private CompanyService companyService;
 
+    @Operation(summary = "Buscar empresas com filtros e paginação")
     @GetMapping
-    @Operation(summary = "Endpoint para listar todas as empresas")
-    public ResponseEntity<List<CompanyDTO>> getAllCompanies() {
-        List<CompanyDTO> companies = companyService.getAllCompanies();
-        return ResponseEntity.ok(companies);
+    public ResponseEntity<?> getCompanies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) boolean all,
+            @RequestParam(required = false) String name) {
+
+        if (all) {
+            List<CompanyDTO> companies = companyService.getAllCompanies();
+            return ResponseEntity.ok(companies);
+        }
+
+        CompanyResponseDTO response = companyService.getCompanies(page, size,name);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
@@ -49,7 +60,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Endpoint para deletar empresa")
+    @Operation(summary = "Endpoint para deletar empresa (soft delete)")
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();

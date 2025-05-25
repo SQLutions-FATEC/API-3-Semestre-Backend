@@ -1,11 +1,15 @@
 package com.sqlutions.altave.service.impl;
 
-import com.sqlutions.altave.dto.EmployeeDTO;
+import com.sqlutions.altave.dto.*;
 import com.sqlutions.altave.entity.Employee;
 import com.sqlutions.altave.repository.EmployeeRepository;
 import com.sqlutions.altave.service.EmployeeService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import java.util.stream.Collectors;
@@ -22,17 +26,66 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee savedEmployee = employeeRepository.save(employee);
         return convertToDTO(savedEmployee);
     }
+
     @Override
     public EmployeeDTO getEmployeeById(Long id){
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado"));
+        Employee employee = employeeRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new RuntimeException("Funcionário não encontrado ou foi deletado"));
         return convertToDTO(employee);
     }
+
     @Override
     public List<EmployeeDTO> getAllEmployees() {
         return employeeRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EmployeeDTO> getAllActiveEmployees() {
+        return employeeRepository.findAllActive().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmployee(Long id) {
+        Employee employee = employeeRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new EntityNotFoundException("Funcionário não encontrado ou já deletado"));
+
+        employee.setDeletedAt(LocalDateTime.now());
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public EmployeeResponseWithTotalDTO getEmployees(int page, int size, String name) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        List<Employee> employees = employeeRepository.findAll();
+
+        if (name != null && !name.trim().isEmpty()) {
+            String nameFilter = name.trim().toLowerCase();
+            employees = employees.stream()
+                    .filter(e -> e.getEmployeeName() != null &&
+                            e.getEmployeeName().toLowerCase().contains(nameFilter))
+                    .toList();
+        }
+
+        int total = employees.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<EmployeeDTO> paged = employees.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return EmployeeResponseWithTotalDTO.builder()
+                .items(paged)
+                .total(total)
+                .build();
     }
 
     @Override

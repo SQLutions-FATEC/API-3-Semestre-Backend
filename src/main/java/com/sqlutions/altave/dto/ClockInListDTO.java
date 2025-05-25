@@ -18,8 +18,11 @@ public class ClockInListDTO {
     private CompanyListDTO company;
     @JsonProperty("role_name")
     private String roleName;
-    @JsonProperty("direction")
-    private String direction;
-    @JsonProperty("date_time")
-    private String dateTime;
+    @JsonProperty("date_time_in")
+    private String dateTimeIn;
+    @JsonProperty("date_time_out")
+    private String dateTimeOut;
+    @JsonProperty("worked_hours")
+    private Double workedHours;
 }
+

@@ -1,17 +1,17 @@
 package com.sqlutions.altave.service.impl;
 
 import com.sqlutions.altave.dto.CompanyDTO;
-import com.sqlutions.altave.entity.ClockIn;
+import com.sqlutions.altave.dto.CompanyResponseDTO;
 import com.sqlutions.altave.entity.Company;
 import com.sqlutions.altave.entity.Contract;
-import com.sqlutions.altave.entity.Employee;
-import com.sqlutions.altave.repository.ClockInRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
 import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.service.CompanyService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,14 +24,44 @@ public class CompanyServiceImpl implements CompanyService {
     @Autowired
     private ContractRepository contractRepository;
 
-    @Autowired
-    private ClockInRepository clockInRepository;
-
     @Override
     public List<CompanyDTO> getAllCompanies() {
         return companyRepository.findAll().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public CompanyResponseDTO getCompanies(int page, int size, String name) {
+        if (page > 0) {
+            page = page - 1;
+        }
+
+        List<Company> companies = companyRepository.findAll().stream()
+                .filter(company -> company.getDeletedAt() == null)
+                .toList();
+
+        if (name != null && !name.trim().isEmpty()) {
+            String nameFilter = name.trim().toLowerCase();
+            companies = companies.stream()
+                    .filter(c -> c.getCompanyName() != null &&
+                            c.getCompanyName().toLowerCase().contains(nameFilter))
+                    .toList();
+        }
+
+        int total = companies.size();
+        int start = Math.min(page * size, total);
+        int end = Math.min(start + size, total);
+
+        List<CompanyDTO> paged = companies.subList(start, end).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return CompanyResponseDTO.builder()
+                .items(paged)
+                .total(total)
+                .build();
     }
 
     @Override
@@ -62,22 +92,27 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
+    @Transactional
     public void deleteCompany(Long id) {
-        Company company = companyRepository.findById(id)
+        Company company = companyRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new RuntimeException("Empresa não encontrada"));
 
-        List<Contract> contracts = contractRepository.findByCompany(company);
+        List<Contract> contracts = contractRepository.findByCompanyAndDeletedAtIsNull(company);
 
         for (Contract contract : contracts) {
-            Employee employee = contract.getEmployee();
-            List<ClockIn> clockIns = clockInRepository.findByEmployee(employee);
-
-            clockInRepository.deleteAll(clockIns);
-
-            contractRepository.delete(contract);
+            contract.setDeletedAt(LocalDateTime.now());
+            contractRepository.save(contract);
         }
 
-        companyRepository.delete(company);
+        company.setDeletedAt(LocalDateTime.now());
+        companyRepository.save(company);
+    }
+
+    @Override
+    public CompanyDTO getActiveCompanyById(Long id) {
+        Company company = companyRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new RuntimeException("Empresa não encontrada ou já deletada"));
+        return convertToDTO(company);
     }
 
     private CompanyDTO convertToDTO(Company company) {
