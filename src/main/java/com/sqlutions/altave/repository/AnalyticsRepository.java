@@ -100,44 +100,73 @@ public interface AnalyticsRepository extends JpaRepository<ClockIn, Long> {
             WHERE ((c.dateTimeIn IS NOT NULL AND c.dateTimeOut IS NULL) OR (c.dateTimeIn IS NULL AND c.dateTimeOut IS NOT NULL))
                 AND (c.dateTimeIn BETWEEN ct.startDate AND ct.endDate OR c.dateTimeOut BETWEEN ct.startDate AND ct.endDate)
                 AND (:companyId IS NULL OR ct.company.id = :companyId)
-                AND (c.dateTimeIn <= :since OR c.dateTimeOut <= :since)
                 AND e.deletedAt IS NULL
             """)
-    List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
+    List<IncompleteClockIn> getIncompleteClockIns(@Param("companyId") Long companyId);
 
-    @Query("""
-            SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
-            WHERE (EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 0 AND 6 OR EXTRACT(HOUR FROM c.dateTimeIn) = 23)
-                AND ct.employee.id = c.employee.id
-                AND (:companyId IS NULL OR ct.company.id = :companyId)
-                AND c.dateTimeIn >= :since
-                AND c.dateTimeOut < CURRENT_TIMESTAMP
-                AND c.employee.deletedAt IS NULL
-            """)
-    int countMidnightToMorning(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
+    @Query(value = """
+        SELECT COUNT(DISTINCT e.id)
+        FROM employee e
+        JOIN contract ct ON e.id = ct.employee_id
+        JOIN clock_in c ON e.id = c.employee_id
+        WHERE (:companyId IS NULL OR ct.company_id = :companyId)
+          AND CURRENT_DATE BETWEEN ct.start_date AND ct.end_date
+          AND e.deleted_at IS NULL
+          AND c.date_time_in IS NOT NULL
+          AND c.date_time_out IS NOT NULL
+          AND (
+              (EXTRACT(HOUR FROM c.date_time_in) BETWEEN 0 AND 6) OR
+              (EXTRACT(HOUR FROM c.date_time_in) = 23 AND EXTRACT(MINUTE FROM c.date_time_in) >= 30)
+          )
+          AND c.date_time_in = (
+              SELECT MIN(ci.date_time_in)
+              FROM clock_in ci
+              WHERE ci.employee_id = e.id
+                AND ci.date_time_in IS NOT NULL
+                AND ci.date_time_out IS NOT NULL
+          )
+    """, nativeQuery = true)
+    int countMidnightToMorning(@Param("companyId") Long companyId);
 
-    @Query("""
-            SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
-            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 7 AND 14
-                AND ct.employee.id = c.employee.id
-                AND (:companyId IS NULL OR ct.company.id = :companyId)
-                AND c.dateTimeIn >= :since
-                AND c.dateTimeOut < CURRENT_TIMESTAMP
-                AND c.employee.deletedAt IS NULL
-            """)
-    int countMorningToAfternoon(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
+    @Query(value = """
+        SELECT COUNT(DISTINCT e.id)
+        FROM employee e
+        JOIN contract ct ON e.id = ct.employee_id
+        JOIN clock_in c ON e.id = c.employee_id
+        WHERE (:companyId IS NULL OR ct.company_id = :companyId)
+          AND CURRENT_DATE BETWEEN ct.start_date AND ct.end_date
+          AND e.deleted_at IS NULL
+          AND c.date_time_in IS NOT NULL
+          AND c.date_time_out IS NOT NULL
+          AND EXTRACT(HOUR FROM c.date_time_in) BETWEEN 7 AND 14
+          AND c.date_time_in = (
+              SELECT MIN(ci.date_time_in)
+              FROM clock_in ci
+              WHERE ci.employee_id = e.id
+                AND ci.date_time_in IS NOT NULL
+                AND ci.date_time_out IS NOT NULL
+          )
+    """, nativeQuery = true)
+    int countMorningToAfternoon(@Param("companyId") Long companyId);
 
-    @Query("""
-            SELECT COUNT(DISTINCT c.employee.id) FROM ClockIn c
-                JOIN Contract ct ON c.dateTimeOut BETWEEN ct.startDate AND ct.endDate
-            WHERE EXTRACT(HOUR FROM c.dateTimeIn) BETWEEN 15 AND 22
-                AND ct.employee.id = c.employee.id
-                AND ct.company.id = :companyId
-                AND c.dateTimeIn >= :since
-                AND c.dateTimeOut < CURRENT_TIMESTAMP
-                AND c.employee.deletedAt IS NULL
-            """)
-    int countAfternoonToNight(@Param("companyId") Long companyId, @Param("since") LocalDateTime since);
+    @Query(value = """
+        SELECT COUNT(DISTINCT e.id)
+        FROM employee e
+        JOIN contract ct ON e.id = ct.employee_id
+        JOIN clock_in c ON e.id = c.employee_id
+        WHERE (:companyId IS NULL OR ct.company_id = :companyId)
+          AND CURRENT_DATE BETWEEN ct.start_date AND ct.end_date
+          AND e.deleted_at IS NULL
+          AND c.date_time_in IS NOT NULL
+          AND c.date_time_out IS NOT NULL
+          AND EXTRACT(HOUR FROM c.date_time_in) BETWEEN 15 AND 22
+          AND c.date_time_in = (
+              SELECT MIN(ci.date_time_in)
+              FROM clock_in ci
+              WHERE ci.employee_id = e.id
+                AND ci.date_time_in IS NOT NULL
+                AND ci.date_time_out IS NOT NULL
+          )
+    """, nativeQuery = true)
+    int countAfternoonToNight(@Param("companyId") Long companyId);
 }
