@@ -33,8 +33,12 @@ public class Contract {
     private Role role;
 
     public boolean isActive(LocalDate today) {
-        return (startDate != null && !startDate.isAfter(today) &&
-                (endDate != null && !endDate.isBefore(today)));
+        if (startDate == null) return false;
+
+        boolean started = !startDate.isAfter(today);
+        boolean notEnded = endDate == null || !endDate.isBefore(today);
+
+        return started && notEnded;
     }
 
     @Column(name = "deleted_at", nullable = true)
