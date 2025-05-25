@@ -1,6 +1,6 @@
 package com.sqlutions.altave.controller;
 
-import com.sqlutions.altave.dto.ContractRequestDTO;
+import com.sqlutions.altave.dto.BulkContractUpdateRequestDTO;
 import com.sqlutions.altave.dto.ContractResponseDTO;
 import com.sqlutions.altave.dto.CreateContractsRequestDTO;
 import com.sqlutions.altave.service.ContractService;
@@ -27,10 +27,12 @@ public class ContractController {
         return ResponseEntity.ok(contractService.createContracts(request));
     }
 
-    @PutMapping("/{contractId}")
-    public ResponseEntity<ContractResponseDTO> updateContract(@PathVariable Long contractId,
-                                                              @RequestBody ContractRequestDTO dto) {
-        return ResponseEntity.ok(contractService.updateContract(contractId, dto));
+    @PutMapping
+    public ResponseEntity<Void> bulkUpdateContracts(
+            @Valid @RequestBody BulkContractUpdateRequestDTO request) {
+
+        contractService.processBulkUpdate(request);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{contractId}")

@@ -1,19 +1,23 @@
 package com.sqlutions.altave.service.impl;
 
+import com.sqlutions.altave.dto.BulkContractUpdateRequestDTO;
 import com.sqlutions.altave.dto.ContractRequestDTO;
 import com.sqlutions.altave.dto.ContractResponseDTO;
 import com.sqlutions.altave.dto.CreateContractsRequestDTO;
 import com.sqlutions.altave.entity.Contract;
+import com.sqlutions.altave.entity.Employee;
 import com.sqlutions.altave.exception.BusinessException;
 import com.sqlutions.altave.repository.ContractRepository;
 import com.sqlutions.altave.repository.CompanyRepository;
 import com.sqlutions.altave.repository.EmployeeRepository;
 import com.sqlutions.altave.repository.RoleRepository;
 import com.sqlutions.altave.service.ContractService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +43,7 @@ public class ContractServiceImpl implements ContractService {
     public ContractResponseDTO createContract(ContractRequestDTO dto) {
         validateContractDates(dto.getStartDate(), dto.getEndDate());
 
-        var employee = employeeRepository.findById(dto.getEmployee_id()).orElseThrow();
+        var employee = employeeRepository.findById(dto.getEmployeeId()).orElseThrow();
         var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
         var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
 
@@ -113,26 +117,88 @@ public class ContractServiceImpl implements ContractService {
         });
     }
 
-
     @Override
-    public ContractResponseDTO updateContract(Long contractId, ContractRequestDTO dto) {
+    @Transactional
+    public void processBulkUpdate(BulkContractUpdateRequestDTO request) {
+        var employee = employeeRepository.findById(request.getEmployeeId())
+                .orElseThrow(() -> new BusinessException("Funcionário não encontrado"));
+
+        for (BulkContractUpdateRequestDTO.ContractOperationDTO dto : request.getContracts()) {
+            switch (dto.getAction().toLowerCase()) {
+                case "create":
+                    createNewContract(employee, dto);
+                    break;
+                case "update":
+                    updateExistingContract(dto);
+                    break;
+                case "delete":
+                    deleteContract(dto.getId());
+                    break;
+                case "keep":
+                    break;
+                default:
+                    throw new BusinessException("Ação inválida para contrato: " + dto.getAction());
+            }
+        }
+
+        validateSingleActiveContract(employee.getId());
+    }
+
+    private void createNewContract(Employee employee, BulkContractUpdateRequestDTO.ContractOperationDTO dto) {
         validateContractDates(dto.getStartDate(), dto.getEndDate());
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new BusinessException("Contrato não encontrado."));
 
-        var employee = employeeRepository.findById(dto.getEmployee_id()).orElseThrow();
-        var company = companyRepository.findById(dto.getCompanyId()).orElseThrow();
-        var role = roleRepository.findById(dto.getRoleId()).orElseThrow();
+        var company = companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new BusinessException("Empresa não encontrada"));
+        var role = roleRepository.findById(dto.getRoleId())
+                .orElseThrow(() -> new BusinessException("Cargo não encontrado"));
 
+        Contract contract = new Contract();
         contract.setEmployee(employee);
         contract.setCompany(company);
         contract.setRole(role);
         contract.setStartDate(dto.getStartDate());
         contract.setEndDate(dto.getEndDate());
 
-        return new ContractResponseDTO(contractRepository.save(contract));
+        contractRepository.save(contract);
     }
 
+    private void updateExistingContract(BulkContractUpdateRequestDTO.ContractOperationDTO dto) {
+        Contract contract = contractRepository.findById(dto.getId())
+                .orElseThrow(() -> new BusinessException("Contrato não encontrado para atualização"));
+
+        validateContractDates(dto.getStartDate(), dto.getEndDate());
+
+        var company = companyRepository.findById(dto.getCompanyId())
+                .orElseThrow(() -> new BusinessException("Empresa não encontrada"));
+        var role = roleRepository.findById(dto.getRoleId())
+                .orElseThrow(() -> new BusinessException("Cargo não encontrado"));
+
+        contract.setCompany(company);
+        contract.setRole(role);
+        contract.setStartDate(dto.getStartDate());
+        contract.setEndDate(dto.getEndDate());
+
+        contractRepository.save(contract);
+    }
+
+    private void validateSingleActiveContract(Long employeeId) {
+        List<Contract> activeContracts = contractRepository.findActiveContractsByEmployee(employeeId, LocalDate.now());
+
+        if (activeContracts.size() > 1) {
+            // Encontra o contrato mais recente (com data de início mais recente)
+            Contract mostRecent = activeContracts.stream()
+                    .max(Comparator.comparing(Contract::getStartDate))
+                    .orElseThrow();
+
+            // Inativa todos os outros
+            activeContracts.forEach(contract -> {
+                if (!contract.equals(mostRecent)) {
+                    contract.setEndDate(mostRecent.getStartDate().minusDays(1));
+                    contractRepository.save(contract);
+                }
+            });
+        }
+    }
 
     public void deleteContract(Long contractId) {
         contractRepository.deleteById(contractId);
